@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="refresh" content="0; url=/demo/blm.html" />
+  <title>正在跳转…</title>
+</head>
+<body>
+  正在跳转到页面…如果没有自动跳转，请点击：
+  <a href="/demo/blm.html">/demo/blm.html</a>
+</body>
+</html>
