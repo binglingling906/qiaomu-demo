@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>史喜洋快速会议 · 企业融资与供应链金融（可视化纪要）</title>
+  <meta name="description" content="将多场企业融资与供应链金融会议纪要转为Linear风格中文可视化网页：摘要、图表、时间线、工具矩阵、SOP与进一步阅读。" />
+
+  <!-- Fonts (<= 3) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg: 255 255 255;
+      --fg: 17 24 39;
+      --muted: 107 114 128;
+      --card: 249 250 251;
+      --border: 229 231 235;
+      --accent: 79 70 229;     /* indigo */
+      --accent2: 6 182 212;    /* cyan */
+      --good: 16 185 129;      /* emerald */
+      --warn: 245 158 11;      /* amber */
+      --bad: 239 68 68;        /* red */
+      --shadow: 0 14px 45px rgba(0,0,0,.10);
+    }
+    :root.dark{
+      --bg: 10 10 12;
+      --fg: 243 244 246;
+      --muted: 156 163 175;
+      --card: 16 16 20;
+      --border: 38 38 44;
+      --accent: 129 140 248;
+      --accent2: 34 211 238;
+      --good: 52 211 153;
+      --warn: 251 191 36;
+      --bad: 248 113 113;
+      --shadow: 0 22px 70px rgba(0,0,0,.45);
+    }
+
+    body{
+      font-family: "Noto Sans SC", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft Yahei", sans-serif;
+      background: rgb(var(--bg));
+      color: rgb(var(--fg));
+      text-rendering: geometricPrecision;
+    }
+    .serif{ font-family: "Noto Serif SC", ui-serif, Georgia, "Times New Roman", serif; }
+    .mono{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .grid-bg{
+      background-image:
+        linear-gradient(to right, rgba(120,120,130,.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(120,120,130,.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    :root.dark .grid-bg{
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+    }
+
+    .reveal{
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.is-visible{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .focus-ring:focus{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.22);
+      border-color: rgba(99,102,241,.65);
+    }
+
+    .card{
+      background: rgb(var(--card));
+      border: 1px solid rgb(var(--border));
+      box-shadow: 0 1px 0 rgba(0,0,0,.02);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(99,102,241,.45);
+    }
+
+    .btn{ transition: transform .16s ease, filter .16s ease; }
+    .btn:hover{ transform: scale(1.02); filter: brightness(1.02); }
+
+    .pill{
+      border: 1px solid rgb(var(--border));
+      background: rgba(var(--accent), .08);
+      color: rgb(var(--fg));
+    }
+
+    .prose-like p{ line-height: 1.85; }
+    .prose-like li{ line-height: 1.8; }
+
+    /* subtle dashed connector */
+    .dash{
+      background-image: linear-gradient(to bottom, rgba(120,120,130,.45) 33%, rgba(0,0,0,0) 0%);
+      background-position: left;
+      background-size: 2px 10px;
+      background-repeat: repeat-y;
+      opacity: .35;
+    }
+
+    /* mark for search highlights */
+    mark{
+      background: rgba(6,182,212,.22);
+      color: inherit;
+      padding: 0 .15em;
+      border-radius: .35em;
+    }
+
+    @media print{
+      .no-print{ display:none !important; }
+      .card{ box-shadow:none !important; }
+      body{ background:#fff !important; }
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: { soft: "0 14px 40px rgba(0,0,0,.12)" }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="grid-bg">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 supports-[backdrop-filter]:dark:bg-black/40 border-b"
+          style="border-color: rgb(var(--border));">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="h-9 w-9 rounded-xl flex items-center justify-center border"
+               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
+            <i class="fa-solid fa-layer-group" style="color: rgb(var(--accent));"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-sm font-semibold tracking-tight truncate">史喜洋快速会议 · 可视化纪要</div>
+            <div class="text-xs" style="color: rgb(var(--muted));">企业融资 · 供应链金融 · 风控 · 获客</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="relative hidden sm:block">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
+            <input id="searchInput" class="focus-ring w-80 rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
+              style="border-color: rgb(var(--border));"
+              placeholder="搜索：应收账款 / 保理 / 商票 / 电商垫资 / 融资租赁 / 征信…" />
+          </div>
+
+          <button id="themeBtn" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
+                  style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .10);">
+            <i id="themeIcon" class="fa-solid fa-moon" style="color: rgb(var(--accent2));"></i>
+            <span class="hidden sm:inline">深浅色</span>
+          </button>
+
+          <a href="#author" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
+             style="border-color: rgb(var(--border));">
+            <i class="fa-solid fa-circle-info text-xs" style="color: rgb(var(--muted));"></i>
+            <span class="hidden sm:inline">作者</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="pb-3 sm:hidden">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
+          <input id="searchInputMobile" class="focus-ring w-full rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
+            style="border-color: rgb(var(--border));"
+            placeholder="搜索关键点…" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-8">
+    <div class="reveal">
+      <div class="flex flex-col lg:flex-row lg:items-end gap-6">
+        <div class="flex-1 min-w-0">
+          <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
+               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .08);">
+            <span class="h-1.5 w-1.5 rounded-full" style="background: rgb(var(--accent2));"></span>
+            <span style="color: rgb(var(--muted));">从“会议纪要”到“可执行融资地图”</span>
+          </div>
+
+          <h1 class="serif mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            企业融资与供应链金融：<span style="color: rgb(var(--accent));">一张可复用的实战框架</span>
+          </h1>
+
+          <p class="mt-4 text-base sm:text-lg prose-like" style="color: rgb(var(--muted));">
+            这套纪要的价值不在“知识点多”，而在于它把融资拆成一条<strong>可落地的因果链</strong>：
+            <span class="font-semibold">财务报表 → 上下游场景 → 资金用途 → 工具选择 → 风控动作 → 交付与分润</span>。
+            当你能沿着这条链定位问题，融资就从“撞大运”变成“工程化匹配”。
+          </p>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-sitemap" style="color: rgb(var(--accent));"></i> 方法论
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-file-invoice" style="color: rgb(var(--accent));"></i> 报表与征信
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-arrows-spin" style="color: rgb(var(--accent));"></i> 供应链工具
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent));"></i> 风控要点
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-bullhorn" style="color: rgb(var(--accent));"></i> 新媒体获客
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick facts -->
+        <div class="card rounded-2xl p-5 w-full lg:w-[420px]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速概览</div>
+              <div class="mt-1 text-lg font-semibold">这份纪要覆盖了什么？</div>
+            </div>
+            <div class="h-10 w-10 rounded-xl flex items-center justify-center border"
+                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
+              <i class="fa-solid fa-gauge-high" style="color: rgb(var(--accent2));"></i>
+            </div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">会议场次</div>
+              <div class="mt-1 text-2xl font-bold">5+</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">1/17–1/18 多场</div>
+            </div>
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">核心主轴</div>
+              <div class="mt-1 text-2xl font-bold">6</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">报表/场景/工具/风控/沟通/获客</div>
+            </div>
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">高频工具</div>
+              <div class="mt-1 text-2xl font-bold">保理</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">暗保理 / 反向保理 / 供应链票据</div>
+            </div>
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">适用行业</div>
+              <div class="mt-1 text-2xl font-bold">电商</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">酒店/学校/制造/快消等</div>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs" style="color: rgb(var(--muted));">
+            <span class="mono">Aha</span>：融资不是“找产品”，而是“找<strong>资金嵌入点</strong> + <strong>可控风险</strong>”。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left / TOC -->
+      <aside class="lg:col-span-3">
+        <div class="card rounded-2xl p-4 sticky top-24 no-print">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-semibold">目录</div>
+            <button id="scrollTopBtn" class="btn text-xs px-2 py-1 rounded-lg border"
+              style="border-color: rgb(var(--border)); color: rgb(var(--muted));">
+              <i class="fa-solid fa-arrow-up"></i>
+            </button>
+          </div>
+          <nav class="mt-3 space-y-1 text-sm" id="toc"></nav>
+
+          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
+            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速过滤</div>
+            <div class="mt-2 flex flex-wrap gap-2" id="quickFilters"></div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
+            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">提示</div>
+            <p class="mt-2 text-xs leading-relaxed" style="color: rgb(var(--muted));">
+              你可以用右上角搜索：比如输入“暗保理”“商票保贴”“电商垫资”“融资租赁”“征信”，页面会高亮并折叠无关模块。
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <section class="lg:col-span-9 space-y-6" id="contentRoot">
+
+        <!-- Aha moment -->
+        <section id="aha" class="reveal card rounded-2xl p-6 searchable">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="serif text-2xl font-bold tracking-tight">Aha Moment</h2>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                这份纪要真正教会你的，是一套<strong>“从信息到方案”的流水线</strong>。
+              </p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl flex items-center justify-center border"
+              style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
+              <i class="fa-solid fa-bolt" style="color: rgb(var(--accent2));"></i>
+            </div>
+          </div>
+
+          <blockquote class="mt-4 rounded-2xl border p-4 text-base sm:text-lg leading-relaxed"
+            style="border-color: rgb(var(--border)); background: rgba(var(--accent), .06);">
+            <span class="font-semibold">一句话洞察：</span>
+            <span>
+              企业融资不是“去问客户要负债”，而是先<strong>定位资金卡点</strong>（采购/库存/账期/工资/研发/囤货）
+              → 再用<strong>报表与票据</strong>证明真实性 → 最后选一个<strong>可控风控动作</strong>把风险关进笼子里。
+            </span>
+          </blockquote>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent));"></span>
+                <div class="text-sm font-semibold">输入</div>
+              </div>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                三张表（资产负债表/利润表/增值税） + 上下游合同/票据/回款路径
+              </p>
+            </div>
+            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent2));"></span>
+                <div class="text-sm font-semibold">处理</div>
+              </div>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                还原“采购→生产→销售”的资金流，找出账期与付款方式的融资属性
+              </p>
+            </div>
+            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--good));"></span>
+                <div class="text-sm font-semibold">输出</div>
+              </div>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                匹配：保理/租赁/供应链票据/电商垫资/货押托盘，并附风控动作清单
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Visual: Framework Map -->
+        <section id="framework" class="reveal card rounded-2xl p-6 searchable">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="serif text-2xl font-bold tracking-tight">融资“工程化”框架图</h2>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                用一张图把会议里分散的内容，压缩成可复用的工作流。
+              </p>
+            </div>
+            <i class="fa-solid fa-diagram-project text-lg" style="color: rgb(var(--muted));"></i>
+          </div>
+
+          <!-- Inline SVG (fast, no external images; effectively "webp-free") -->
+          <div class="mt-5 overflow-x-auto">
+            <div class="min-w-[860px] rounded-2xl border p-5"
+                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .04);">
+              <svg viewBox="0 0 980 260" width="100%" height="260" role="img" aria-label="融资工程化框架图">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="rgba(79,70,229,.25)"></stop>
+                    <stop offset="1" stop-color="rgba(6,182,212,.20)"></stop>
+                  </linearGradient>
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(0,0,0,.18)"/>
+                  </filter>
+                </defs>
+
+                <!-- lanes -->
+                <rect x="18" y="18" rx="18" ry="18" width="944" height="224" fill="url(#g1)" stroke="rgba(120,120,130,.35)"></rect>
+
+                <!-- nodes -->
+                <g filter="url(#shadow)">
+                  <rect x="42" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="240" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="438" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="636" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="834" y="62" rx="14" ry="14" width="120" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                </g>
+
+                <!-- arrows -->
+                <g stroke="rgba(79,70,229,.75)" stroke-width="3" fill="none">
+                  <path d="M212 130 L232 130"></path>
+                  <path d="M410 130 L432 130"></path>
+                  <path d="M608 130 L630 130"></path>
+                  <path d="M806 130 L828 130"></path>
+                  <polygon points="232,130 224,124 224,136" fill="rgba(79,70,229,.75)"></polygon>
+                  <polygon points="432,130 424,124 424,136" fill="rgba(79,70,229,.75)"></polygon>
+                  <polygon points="630,130 622,124 622,136" fill="rgba(79,70,229,.75)"></polygon>
+                  <polygon points="828,130 820,124 820,136" fill="rgba(79,70,229,.75)"></polygon>
+                </g>
+
+                <!-- labels -->
+                <g font-family="Noto Sans SC, sans-serif" fill="rgba(17,24,39,.92)">
+                  <text x="62" y="92" font-size="14" font-weight="700">1) 信息采集</text>
+                  <text x="62" y="116" font-size="12">· 三大报表</text>
+                  <text x="62" y="136" font-size="12">· 征信/负债结构</text>
+                  <text x="62" y="156" font-size="12">· 合同/票据/回款</text>
+
+                  <text x="260" y="92" font-size="14" font-weight="700">2) 还原场景</text>
+                  <text x="260" y="116" font-size="12">· 采购/生产/销售</text>
+                  <text x="260" y="136" font-size="12">· 账期/付款方式</text>
+                  <text x="260" y="156" font-size="12">· 资金用途拆解</text>
+
+                  <text x="458" y="92" font-size="14" font-weight="700">3) 工具匹配</text>
+                  <text x="458" y="116" font-size="12">· 保理（明/暗/反向）</text>
+                  <text x="458" y="136" font-size="12">· 租赁 / 票据 / 电商垫资</text>
+                  <text x="458" y="156" font-size="12">· 货押 / 托盘 / 代采</text>
+
+                  <text x="656" y="92" font-size="14" font-weight="700">4) 风控动作</text>
+                  <text x="656" y="116" font-size="12">· 确权/签收/通知函</text>
+                  <text x="656" y="136" font-size="12">· 控回款账户/控U盾</text>
+                  <text x="656" y="156" font-size="12">· 仓储监管/物权控制</text>
+
+                  <text x="854" y="92" font-size="14" font-weight="700">5) 交付</text>
+                  <text x="854" y="116" font-size="12">· 材料清单</text>
+                  <text x="854" y="136" font-size="12">· 报价分润</text>
+                  <text x="854" y="156" font-size="12">· 复盘迭代</text>
+                </g>
+              </svg>
+
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">关键提醒</div>
+                  <div class="mt-1 text-sm font-semibold">先做“场景”，再谈“产品”</div>
+                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
+                    会议反复强调：别上来问负债，先把产业链讲清楚，信任自然建立。
+                  </p>
+                </div>
+                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">高频坑位</div>
+                  <div class="mt-1 text-sm font-semibold">“补流”是模糊表述</div>
+                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
+                    要把资金用途拆到“采购/库存/账期/工资/研发/囤货”等可验证节点。
+                  </p>
+                </div>
+                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">可复制优势</div>
+                  <div class="mt-1 text-sm font-semibold">风控动作清单化</div>
+                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
+                    暗保理为何更“受欢迎”？因为它把风险压在“控回款/控单据/控物权”的动作上。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Timeline -->
+        <section id="timeline" class="reveal card rounded-2xl p-6 searchable">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="serif text-2xl font-bold tracking-tight">会议时间线</h2>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">把多场内容合并成“一个连续课程”。</p>
+            </div>
+            <i class="fa-solid fa-clock text-lg" style="color: rgb(var(--muted));"></i>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 gap-4">
+            <!-- item -->
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
+                     style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
+                  <i class="fa-solid fa-chart-pie" style="color: rgb(var(--accent));"></i>
+                </div>
+                <div class="dash w-[2px] flex-1 mt-2"></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-sm font-semibold">2026-01-17 09:30–10:30</span>
+                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+                        style="background: rgba(var(--accent2), .10); border: 1px solid rgb(var(--border));">
+                    报表 + 场景 + 融资属性
+                  </span>
+                </div>
+                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                  三大抓手：财务报表（应收/存货/设备）、上下游资金嵌入、对标历史融资机构找新机构。
+                  重点：利润来源是否过度依赖政府补贴；增值税开票与营收差距的风险信号。
+                </p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
+                     style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
+                  <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent2));"></i>
+                </div>
+                <div class="dash w-[2px] flex-1 mt-2"></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-sm font-semibold">2026-01-17 11:08–12:08</span>
+                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+                        style="background: rgba(var(--accent), .08); border: 1px solid rgb(var(--border));">
+                    负债/征信/供应链票据
+                  </span>
+                </div>
+                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                  初次接触企业：避免直问负债，先聊产业链并“赞美建立信任”。
+                  负债区分有息/无息；征信区分历史/当前原因。
+                  核心企业赋能上下游金融（授信/低息）是关键。
+                  区分供应链票据（最长6个月、可拆分流转）与电子债权凭证（期限更长但系统内流通、成本高）。
+                </p>
+              </div>
+            </div>
+
+            <div class<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>史喜洋快速会议 · 企业融资与供应链金融（可视化纪要）</title>
+  <meta name="description" content="将多场企业融资与供应链金融会议纪要转为Linear风格中文可视化网页：摘要、图表、时间线、工具矩阵、SOP与进一步阅读。" />
+
+  <!-- Fonts (<= 3) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg: 255 255 255;
+      --fg: 17 24 39;
+      --muted: 107 114 128;
+      --card: 249 250 251;
+      --border: 229 231 235;
+      --accent: 79 70 229;     /* indigo */
+      --accent2: 6 182 212;    /* cyan */
+      --good: 16 185 129;      /* emerald */
+      --warn: 245 158 11;      /* amber */
+      --bad: 239 68 68;        /* red */
+      --shadow: 0 14px 45px rgba(0,0,0,.10);
+    }
+    :root.dark{
+      --bg: 10 10 12;
+      --fg: 243 244 246;
+      --muted: 156 163 175;
+      --card: 16 16 20;
+      --border: 38 38 44;
+      --accent: 129 140 248;
+      --accent2: 34 211 238;
+      --good: 52 211 153;
+      --warn: 251 191 36;
+      --bad: 248 113 113;
+      --shadow: 0 22px 70px rgba(0,0,0,.45);
+    }
+
+    body{
+      font-family: "Noto Sans SC", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft Yahei", sans-serif;
+      background: rgb(var(--bg));
+      color: rgb(var(--fg));
+      text-rendering: geometricPrecision;
+    }
+    .serif{ font-family: "Noto Serif SC", ui-serif, Georgia, "Times New Roman", serif; }
+    .mono{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .grid-bg{
+      background-image:
+        linear-gradient(to right, rgba(120,120,130,.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(120,120,130,.06) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    :root.dark .grid-bg{
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+    }
+
+    .reveal{
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.is-visible{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .focus-ring:focus{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.22);
+      border-color: rgba(99,102,241,.65);
+    }
+
+    .card{
+      background: rgb(var(--card));
+      border: 1px solid rgb(var(--border));
+      box-shadow: 0 1px 0 rgba(0,0,0,.02);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(99,102,241,.45);
+    }
+
+    .btn{ transition: transform .16s ease, filter .16s ease; }
+    .btn:hover{ transform: scale(1.02); filter: brightness(1.02); }
+
+    .pill{
+      border: 1px solid rgb(var(--border));
+      background: rgba(var(--accent), .08);
+      color: rgb(var(--fg));
+    }
+
+    .prose-like p{ line-height: 1.85; }
+    .prose-like li{ line-height: 1.8; }
+
+    /* subtle dashed connector */
+    .dash{
+      background-image: linear-gradient(to bottom, rgba(120,120,130,.45) 33%, rgba(0,0,0,0) 0%);
+      background-position: left;
+      background-size: 2px 10px;
+      background-repeat: repeat-y;
+      opacity: .35;
+    }
+
+    /* mark for search highlights */
+    mark{
+      background: rgba(6,182,212,.22);
+      color: inherit;
+      padding: 0 .15em;
+      border-radius: .35em;
+    }
+
+    @media print{
+      .no-print{ display:none !important; }
+      .card{ box-shadow:none !important; }
+      body{ background:#fff !important; }
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: { soft: "0 14px 40px rgba(0,0,0,.12)" }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="grid-bg">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 supports-[backdrop-filter]:dark:bg-black/40 border-b"
+          style="border-color: rgb(var(--border));">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="h-9 w-9 rounded-xl flex items-center justify-center border"
+               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
+            <i class="fa-solid fa-layer-group" style="color: rgb(var(--accent));"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-sm font-semibold tracking-tight truncate">史喜洋快速会议 · 可视化纪要</div>
+            <div class="text-xs" style="color: rgb(var(--muted));">企业融资 · 供应链金融 · 风控 · 获客</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="relative hidden sm:block">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
+            <input id="searchInput" class="focus-ring w-80 rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
+              style="border-color: rgb(var(--border));"
+              placeholder="搜索：应收账款 / 保理 / 商票 / 电商垫资 / 融资租赁 / 征信…" />
+          </div>
+
+          <button id="themeBtn" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
+                  style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .10);">
+            <i id="themeIcon" class="fa-solid fa-moon" style="color: rgb(var(--accent2));"></i>
+            <span class="hidden sm:inline">深浅色</span>
+          </button>
+
+          <a href="#author" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
+             style="border-color: rgb(var(--border));">
+            <i class="fa-solid fa-circle-info text-xs" style="color: rgb(var(--muted));"></i>
+            <span class="hidden sm:inline">作者</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="pb-3 sm:hidden">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
+          <input id="searchInputMobile" class="focus-ring w-full rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
+            style="border-color: rgb(var(--border));"
+            placeholder="搜索关键点…" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-8">
+    <div class="reveal">
+      <div class="flex flex-col lg:flex-row lg:items-end gap-6">
+        <div class="flex-1 min-w-0">
+          <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
+               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .08);">
+            <span class="h-1.5 w-1.5 rounded-full" style="background: rgb(var(--accent2));"></span>
+            <span style="color: rgb(var(--muted));">从“会议纪要”到“可执行融资地图”</span>
+          </div>
+
+          <h1 class="serif mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            企业融资与供应链金融：<span style="color: rgb(var(--accent));">一张可复用的实战框架</span>
+          </h1>
+
+          <p class="mt-4 text-base sm:text-lg prose-like" style="color: rgb(var(--muted));">
+            这套纪要的价值不在“知识点多”，而在于它把融资拆成一条<strong>可落地的因果链</strong>：
+            <span class="font-semibold">财务报表 → 上下游场景 → 资金用途 → 工具选择 → 风控动作 → 交付与分润</span>。
+            当你能沿着这条链定位问题，融资就从“撞大运”变成“工程化匹配”。
+          </p>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-sitemap" style="color: rgb(var(--accent));"></i> 方法论
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-file-invoice" style="color: rgb(var(--accent));"></i> 报表与征信
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-arrows-spin" style="color: rgb(var(--accent));"></i> 供应链工具
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent));"></i> 风控要点
+            </span>
+            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+              <i class="fa-solid fa-bullhorn" style="color: rgb(var(--accent));"></i> 新媒体获客
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick facts -->
+        <div class="card rounded-2xl p-5 w-full lg:w-[420px]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速概览</div>
+              <div class="mt-1 text-lg font-semibold">这份纪要覆盖了什么？</div>
+            </div>
+            <div class="h-10 w-10 rounded-xl flex items-center justify-center border"
+                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
+              <i class="fa-solid fa-gauge-high" style="color: rgb(var(--accent2));"></i>
+            </div>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">会议场次</div>
+              <div class="mt-1 text-2xl font-bold">5+</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">1/17–1/18 多场</div>
+            </div>
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">核心主轴</div>
+              <div class="mt-1 text-2xl font-bold">6</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">报表/场景/工具/风控/沟通/获客</div>
+            </div>
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">高频工具</div>
+              <div class="mt-1 text-2xl font-bold">保理</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">暗保理 / 反向保理 / 供应链票据</div>
+            </div>
+            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+              <div class="text-xs" style="color: rgb(var(--muted));">适用行业</div>
+              <div class="mt-1 text-2xl font-bold">电商</div>
+              <div class="text-xs mt-1" style="color: rgb(var(--muted));">酒店/学校/制造/快消等</div>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs" style="color: rgb(var(--muted));">
+            <span class="mono">Aha</span>：融资不是“找产品”，而是“找<strong>资金嵌入点</strong> + <strong>可控风险</strong>”。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left / TOC -->
+      <aside class="lg:col-span-3">
+        <div class="card rounded-2xl p-4 sticky top-24 no-print">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-semibold">目录</div>
+            <button id="scrollTopBtn" class="btn text-xs px-2 py-1 rounded-lg border"
+              style="border-color: rgb(var(--border)); color: rgb(var(--muted));">
+              <i class="fa-solid fa-arrow-up"></i>
+            </button>
+          </div>
+          <nav class="mt-3 space-y-1 text-sm" id="toc"></nav>
+
+          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
+            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速过滤</div>
+            <div class="mt-2 flex flex-wrap gap-2" id="quickFilters"></div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
+            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">提示</div>
+            <p class="mt-2 text-xs leading-relaxed" style="color: rgb(var(--muted));">
+              你可以用右上角搜索：比如输入“暗保理”“商票保贴”“电商垫资”“融资租赁”“征信”，页面会高亮并折叠无关模块。
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <section class="lg:col-span-9 space-y-6" id="contentRoot">
+
+        <!-- Aha moment -->
+        <section id="aha" class="reveal card rounded-2xl p-6 searchable">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="serif text-2xl font-bold tracking-tight">Aha Moment</h2>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                这份纪要真正教会你的，是一套<strong>“从信息到方案”的流水线</strong>。
+              </p>
+            </div>
+            <div class="h-11 w-11 rounded-2xl flex items-center justify-center border"
+              style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
+              <i class="fa-solid fa-bolt" style="color: rgb(var(--accent2));"></i>
+            </div>
+          </div>
+
+          <blockquote class="mt-4 rounded-2xl border p-4 text-base sm:text-lg leading-relaxed"
+            style="border-color: rgb(var(--border)); background: rgba(var(--accent), .06);">
+            <span class="font-semibold">一句话洞察：</span>
+            <span>
+              企业融资不是“去问客户要负债”，而是先<strong>定位资金卡点</strong>（采购/库存/账期/工资/研发/囤货）
+              → 再用<strong>报表与票据</strong>证明真实性 → 最后选一个<strong>可控风控动作</strong>把风险关进笼子里。
+            </span>
+          </blockquote>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent));"></span>
+                <div class="text-sm font-semibold">输入</div>
+              </div>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                三张表（资产负债表/利润表/增值税） + 上下游合同/票据/回款路径
+              </p>
+            </div>
+            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent2));"></span>
+                <div class="text-sm font-semibold">处理</div>
+              </div>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                还原“采购→生产→销售”的资金流，找出账期与付款方式的融资属性
+              </p>
+            </div>
+            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--good));"></span>
+                <div class="text-sm font-semibold">输出</div>
+              </div>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                匹配：保理/租赁/供应链票据/电商垫资/货押托盘，并附风控动作清单
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Visual: Framework Map -->
+        <section id="framework" class="reveal card rounded-2xl p-6 searchable">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="serif text-2xl font-bold tracking-tight">融资“工程化”框架图</h2>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                用一张图把会议里分散的内容，压缩成可复用的工作流。
+              </p>
+            </div>
+            <i class="fa-solid fa-diagram-project text-lg" style="color: rgb(var(--muted));"></i>
+          </div>
+
+          <!-- Inline SVG (fast, no external images; effectively "webp-free") -->
+          <div class="mt-5 overflow-x-auto">
+            <div class="min-w-[860px] rounded-2xl border p-5"
+                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .04);">
+              <svg viewBox="0 0 980 260" width="100%" height="260" role="img" aria-label="融资工程化框架图">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="rgba(79,70,229,.25)"></stop>
+                    <stop offset="1" stop-color="rgba(6,182,212,.20)"></stop>
+                  </linearGradient>
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(0,0,0,.18)"/>
+                  </filter>
+                </defs>
+
+                <!-- lanes -->
+                <rect x="18" y="18" rx="18" ry="18" width="944" height="224" fill="url(#g1)" stroke="rgba(120,120,130,.35)"></rect>
+
+                <!-- nodes -->
+                <g filter="url(#shadow)">
+                  <rect x="42" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="240" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="438" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="636" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                  <rect x="834" y="62" rx="14" ry="14" width="120" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
+                </g>
+
+                <!-- arrows -->
+                <g stroke="rgba(79,70,229,.75)" stroke-width="3" fill="none">
+                  <path d="M212 130 L232 130"></path>
+                  <path d="M410 130 L432 130"></path>
+                  <path d="M608 130 L630 130"></path>
+                  <path d="M806 130 L828 130"></path>
+                  <polygon points="232,130 224,124 224,136" fill="rgba(79,70,229,.75)"></polygon>
+                  <polygon points="432,130 424,124 424,136" fill="rgba(79,70,229,.75)"></polygon>
+                  <polygon points="630,130 622,124 622,136" fill="rgba(79,70,229,.75)"></polygon>
+                  <polygon points="828,130 820,124 820,136" fill="rgba(79,70,229,.75)"></polygon>
+                </g>
+
+                <!-- labels -->
+                <g font-family="Noto Sans SC, sans-serif" fill="rgba(17,24,39,.92)">
+                  <text x="62" y="92" font-size="14" font-weight="700">1) 信息采集</text>
+                  <text x="62" y="116" font-size="12">· 三大报表</text>
+                  <text x="62" y="136" font-size="12">· 征信/负债结构</text>
+                  <text x="62" y="156" font-size="12">· 合同/票据/回款</text>
+
+                  <text x="260" y="92" font-size="14" font-weight="700">2) 还原场景</text>
+                  <text x="260" y="116" font-size="12">· 采购/生产/销售</text>
+                  <text x="260" y="136" font-size="12">· 账期/付款方式</text>
+                  <text x="260" y="156" font-size="12">· 资金用途拆解</text>
+
+                  <text x="458" y="92" font-size="14" font-weight="700">3) 工具匹配</text>
+                  <text x="458" y="116" font-size="12">· 保理（明/暗/反向）</text>
+                  <text x="458" y="136" font-size="12">· 租赁 / 票据 / 电商垫资</text>
+                  <text x="458" y="156" font-size="12">· 货押 / 托盘 / 代采</text>
+
+                  <text x="656" y="92" font-size="14" font-weight="700">4) 风控动作</text>
+                  <text x="656" y="116" font-size="12">· 确权/签收/通知函</text>
+                  <text x="656" y="136" font-size="12">· 控回款账户/控U盾</text>
+                  <text x="656" y="156" font-size="12">· 仓储监管/物权控制</text>
+
+                  <text x="854" y="92" font-size="14" font-weight="700">5) 交付</text>
+                  <text x="854" y="116" font-size="12">· 材料清单</text>
+                  <text x="854" y="136" font-size="12">· 报价分润</text>
+                  <text x="854" y="156" font-size="12">· 复盘迭代</text>
+                </g>
+              </svg>
+
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">关键提醒</div>
+                  <div class="mt-1 text-sm font-semibold">先做“场景”，再谈“产品”</div>
+                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
+                    会议反复强调：别上来问负债，先把产业链讲清楚，信任自然建立。
+                  </p>
+                </div>
+                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">高频坑位</div>
+                  <div class="mt-1 text-sm font-semibold">“补流”是模糊表述</div>
+                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
+                    要把资金用途拆到“采购/库存/账期/工资/研发/囤货”等可验证节点。
+                  </p>
+                </div>
+                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
+                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">可复制优势</div>
+                  <div class="mt-1 text-sm font-semibold">风控动作清单化</div>
+                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
+                    暗保理为何更“受欢迎”？因为它把风险压在“控回款/控单据/控物权”的动作上。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Timeline -->
+        <section id="timeline" class="reveal card rounded-2xl p-6 searchable">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="serif text-2xl font-bold tracking-tight">会议时间线</h2>
+              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">把多场内容合并成“一个连续课程”。</p>
+            </div>
+            <i class="fa-solid fa-clock text-lg" style="color: rgb(var(--muted));"></i>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 gap-4">
+            <!-- item -->
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
+                     style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
+                  <i class="fa-solid fa-chart-pie" style="color: rgb(var(--accent));"></i>
+                </div>
+                <div class="dash w-[2px] flex-1 mt-2"></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-sm font-semibold">2026-01-17 09:30–10:30</span>
+                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+                        style="background: rgba(var(--accent2), .10); border: 1px solid rgb(var(--border));">
+                    报表 + 场景 + 融资属性
+                  </span>
+                </div>
+                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                  三大抓手：财务报表（应收/存货/设备）、上下游资金嵌入、对标历史融资机构找新机构。
+                  重点：利润来源是否过度依赖政府补贴；增值税开票与营收差距的风险信号。
+                </p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center">
+                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
+                     style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
+                  <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent2));"></i>
+                </div>
+                <div class="dash w-[2px] flex-1 mt-2"></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-sm font-semibold">2026-01-17 11:08–12:08</span>
+                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
+                        style="background: rgba(var(--accent), .08); border: 1px solid rgb(var(--border));">
+                    负债/征信/供应链票据
+                  </span>
+                </div>
+                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
+                  初次接触企业：避免直问负债，先聊产业链并“赞美建立信任”。
+                  负债区分有息/无息；征信区分历史/当前原因。
+                  核心企业赋能上下游金融（授信/低息）是关键。
+                  区分供应链票据（最长6个月、可拆分流转）与电子债权凭证（期限更长但系统内流通、成本高）。
+                </p>
+              </div>
+            </div>
+
+            <div class
