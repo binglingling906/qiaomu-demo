@@ -1,1071 +1,1443 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <title>史喜洋快速会议 · 企业融资与供应链金融（可视化纪要）</title>
-  <meta name="description" content="将多场企业融资与供应链金融会议纪要转为Linear风格中文可视化网页：摘要、图表、时间线、工具矩阵、SOP与进一步阅读。" />
+  <title>史喜洋快速会议｜企业融资与供应链金融｜可视化纪要</title>
+  <meta name="description" content="将多场企业融资与供应链金融会议纪要，结构化为可视化中文网页：方法论、报表抓手、上下游场景、票据与电子凭证、租赁与保理、案例与待办。" />
 
-  <!-- Fonts (<= 3) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- TailwindCSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!--
+    设计目标：
+    - 不使用任何外部 CDN / 字体 / JS 库
+    - 只用内联 CSS（Tailwind 风格的实用类 + 组件样式）
+    - 深浅色：默认跟随系统；支持手动切换并记忆
+  -->
 
   <style>
+    /* =========================
+       0) Design Tokens (Linear-like)
+       ========================= */
     :root{
       --bg: 255 255 255;
-      --fg: 17 24 39;
-      --muted: 107 114 128;
-      --card: 249 250 251;
-      --border: 229 231 235;
-      --accent: 79 70 229;     /* indigo */
-      --accent2: 6 182 212;    /* cyan */
-      --good: 16 185 129;      /* emerald */
-      --warn: 245 158 11;      /* amber */
-      --bad: 239 68 68;        /* red */
-      --shadow: 0 14px 45px rgba(0,0,0,.10);
+      --panel: 250 250 250;
+      --card: 255 255 255;
+      --text: 17 24 39;        /* slate-900 */
+      --muted: 107 114 128;    /* slate-500 */
+      --border: 229 231 235;   /* slate-200 */
+      --shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+      --ring: 59 130 246;      /* blue-500 */
+      --accent: 59 130 246;
+      --accent2: 99 102 241;   /* indigo-500 */
+      --success: 16 185 129;   /* emerald-500 */
+      --warn: 245 158 11;      /* amber-500 */
+      --danger: 239 68 68;     /* red-500 */
+      --radius: 18px;
+      --radius2: 14px;
+      --max: 1200px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+              "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC", Arial, sans-serif;
+      --serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     }
-    :root.dark{
-      --bg: 10 10 12;
-      --fg: 243 244 246;
+    :root[data-theme="dark"]{
+      --bg: 10 11 13;
+      --panel: 14 16 20;
+      --card: 16 18 24;
+      --text: 229 231 235;
       --muted: 156 163 175;
-      --card: 16 16 20;
-      --border: 38 38 44;
-      --accent: 129 140 248;
-      --accent2: 34 211 238;
-      --good: 52 211 153;
-      --warn: 251 191 36;
-      --bad: 248 113 113;
-      --shadow: 0 22px 70px rgba(0,0,0,.45);
+      --border: 41 44 56;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 14px 40px rgba(0,0,0,.6);
+      --ring: 99 102 241;
+      --accent: 99 102 241;
+      --accent2: 59 130 246;
     }
 
+    /* =========================
+       1) Base / Reset
+       ========================= */
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
-      font-family: "Noto Sans SC", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft Yahei", sans-serif;
+      margin:0;
+      font-family: var(--sans);
+      color: rgb(var(--text));
       background: rgb(var(--bg));
-      color: rgb(var(--fg));
-      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x:hidden;
     }
-    .serif{ font-family: "Noto Serif SC", ui-serif, Georgia, "Times New Roman", serif; }
-    .mono{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    a{ color: inherit; text-decoration: none; }
+    button{ font: inherit; }
+    img{ max-width:100%; display:block; }
+    ::selection{ background: rgba(var(--accent), .22); }
 
-    .grid-bg{
-      background-image:
-        linear-gradient(to right, rgba(120,120,130,.06) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(120,120,130,.06) 1px, transparent 1px);
-      background-size: 36px 36px;
-    }
-    :root.dark .grid-bg{
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
-    }
+    /* =========================
+       2) Layout helpers (Tailwind-ish subset)
+       ========================= */
+    .container{ max-width: var(--max); margin:0 auto; padding: 0 20px; }
+    @media (min-width: 768px){ .container{ padding: 0 28px; } }
 
-    .reveal{
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    .reveal.is-visible{
-      opacity: 1;
-      transform: translateY(0);
+    .grid{ display:grid; gap:16px; }
+    .grid-12{ grid-template-columns: repeat(12, minmax(0,1fr)); }
+    .col-12{ grid-column: span 12 / span 12; }
+    @media (min-width: 1024px){
+      .lg-col-8{ grid-column: span 8 / span 8; }
+      .lg-col-4{ grid-column: span 4 / span 4; }
     }
 
-    .focus-ring:focus{
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(99,102,241,.22);
-      border-color: rgba(99,102,241,.65);
+    .row{ display:flex; align-items:center; gap:12px; }
+    .between{ justify-content: space-between; }
+    .wrap{ flex-wrap: wrap; }
+    .mt-8{ margin-top: 32px; }
+    .mt-6{ margin-top: 24px; }
+    .mt-4{ margin-top: 16px; }
+    .mt-3{ margin-top: 12px; }
+    .mt-2{ margin-top: 8px; }
+    .mb-6{ margin-bottom: 24px; }
+    .mb-4{ margin-bottom: 16px; }
+    .mb-3{ margin-bottom: 12px; }
+    .mb-2{ margin-bottom: 8px; }
+
+    /* =========================
+       3) Components
+       ========================= */
+    .topbar{
+      position: sticky; top:0; z-index:50;
+      background: rgba(var(--bg), .75);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgb(var(--border));
     }
+    .topbar-inner{ height:64px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+
+    .brand{ display:flex; align-items:center; gap:10px; min-width: 220px; }
+    .logo{
+      width: 34px; height:34px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(var(--accent),1), rgba(var(--accent2),1));
+      box-shadow: 0 12px 28px rgba(var(--accent), .22);
+      display:grid; place-items:center;
+    }
+    .logo svg{ width:18px; height:18px; color:white; }
+    .brand h1{ font-size: 14px; margin:0; line-height:1.1; font-weight: 700; letter-spacing: .2px; }
+    .brand p{ margin:0; font-size: 12px; color: rgb(var(--muted)); line-height:1.2; }
+
+    .search{
+      flex: 1 1 auto; max-width: 520px;
+      display:flex; align-items:center; gap:10px;
+      border: 1px solid rgb(var(--border));
+      background: rgba(var(--panel), .6);
+      border-radius: 14px;
+      padding: 10px 12px;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .search:focus-within{
+      border-color: rgba(var(--ring), .8);
+      box-shadow: 0 0 0 4px rgba(var(--ring), .15);
+      transform: translateY(-1px);
+    }
+    .search input{
+      width:100%;
+      border:0; outline:0;
+      background: transparent;
+      color: rgb(var(--text));
+      font-size: 13px;
+    }
+    .kbd{
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgb(var(--muted));
+      border: 1px solid rgb(var(--border));
+      border-bottom-color: rgba(var(--border), .6);
+      background: rgba(var(--card), .7);
+      padding: 2px 6px;
+      border-radius: 8px;
+      user-select:none;
+    }
+
+    .btn{
+      border: 1px solid rgb(var(--border));
+      background: rgba(var(--card), .8);
+      color: rgb(var(--text));
+      border-radius: 12px;
+      padding: 9px 12px;
+      display:flex; align-items:center; gap:8px;
+      cursor:pointer;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px) scale(1.01);
+      border-color: rgba(var(--ring), .55);
+      box-shadow: 0 10px 26px rgba(0,0,0,.08);
+    }
+    .btn svg{ width:16px; height:16px; color: rgb(var(--muted)); }
+    .pill{
+      font-size: 12px;
+      color: rgb(var(--muted));
+      border: 1px solid rgb(var(--border));
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(var(--panel), .5);
+    }
+
+    .hero{
+      padding: 26px 0 18px;
+      border-bottom: 1px solid rgb(var(--border));
+      background:
+        radial-gradient(900px 300px at 30% -10%, rgba(var(--accent), .18), transparent 70%),
+        radial-gradient(700px 260px at 86% 0%, rgba(var(--accent2), .16), transparent 65%);
+    }
+    .hero h2{
+      margin:0;
+      font-size: 28px;
+      letter-spacing: -0.6px;
+      line-height: 1.12;
+    }
+    .hero .subtitle{
+      margin-top: 10px;
+      font-size: 14px;
+      color: rgb(var(--muted));
+      line-height: 1.7;
+      max-width: 78ch;
+    }
+    .hero .meta{
+      margin-top: 14px;
+      display:flex; flex-wrap:wrap; gap:10px;
+    }
+    .tag{
+      display:flex; align-items:center; gap:8px;
+      font-size: 12px;
+      color: rgb(var(--muted));
+      border: 1px solid rgb(var(--border));
+      background: rgba(var(--card), .78);
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+    .tag svg{ width:14px; height:14px; color: rgb(var(--muted)); }
 
     .card{
-      background: rgb(var(--card));
       border: 1px solid rgb(var(--border));
-      box-shadow: 0 1px 0 rgba(0,0,0,.02);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+      background: rgba(var(--card), .92);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
     .card:hover{
       transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      border-color: rgba(99,102,241,.45);
+      border-color: rgba(var(--ring), .35);
+      box-shadow: 0 18px 48px rgba(0,0,0,.10);
     }
+    .card-hd{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(var(--border), .8);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .card-hd h3{
+      margin:0;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .card-bd{ padding: 16px; }
 
-    .btn{ transition: transform .16s ease, filter .16s ease; }
-    .btn:hover{ transform: scale(1.02); filter: brightness(1.02); }
+    .kpi{
+      display:flex; flex-direction:column; gap:4px;
+      padding: 12px 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(var(--border), .9);
+      background: rgba(var(--panel), .45);
+    }
+    .kpi .v{ font-size: 20px; font-weight: 850; letter-spacing: -0.5px; }
+    .kpi .k{ font-size: 12px; color: rgb(var(--muted)); line-height:1.3; }
 
-    .pill{
+    .list{
+      display:flex; flex-direction:column; gap:10px;
+      margin:0; padding:0; list-style:none;
+    }
+    .li{
+      display:flex; gap:10px;
+      padding: 12px 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(var(--border), .9);
+      background: rgba(var(--panel), .38);
+      line-height: 1.65;
+      color: rgb(var(--text));
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      margin-top: 6px; flex: 0 0 auto;
+      background: rgba(var(--accent), .95);
+      box-shadow: 0 10px 24px rgba(var(--accent), .25);
+    }
+    .muted{ color: rgb(var(--muted)); }
+
+    .section-title{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+      margin: 0 0 10px 0;
+    }
+    .section-title h4{ margin:0; font-size: 13px; font-weight: 850; letter-spacing: .2px; }
+    .section-title small{ color: rgb(var(--muted)); }
+
+    .toc{
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      width: min(320px, calc(100vw - 36px));
       border: 1px solid rgb(var(--border));
-      background: rgba(var(--accent), .08);
-      color: rgb(var(--fg));
+      background: rgba(var(--card), .88);
+      backdrop-filter: blur(14px);
+      border-radius: 16px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.18);
+      overflow:hidden;
+      transform: translateY(0);
+      transition: transform .2s ease, opacity .2s ease;
+      z-index: 60;
+    }
+    .toc.collapsed{ transform: translateY(calc(100% - 54px)); }
+    .toc-hd{
+      padding: 12px 12px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom: 1px solid rgba(var(--border), .85);
+      cursor: pointer;
+      user-select:none;
+    }
+    .toc-hd strong{ font-size: 13px; }
+    .toc-hd .hint{ font-size: 12px; color: rgb(var(--muted)); }
+    .toc-bd{ padding: 10px 12px; max-height: 260px; overflow:auto; }
+    .toc a{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 8px 10px;
+      border-radius: 12px;
+      color: rgb(var(--text));
+      border: 1px solid transparent;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+      font-size: 13px;
+    }
+    .toc a:hover{
+      background: rgba(var(--panel), .55);
+      border-color: rgba(var(--ring), .22);
+      transform: translateX(2px);
+    }
+    .toc a.active{
+      background: rgba(var(--accent), .12);
+      border-color: rgba(var(--accent), .25);
     }
 
-    .prose-like p{ line-height: 1.85; }
-    .prose-like li{ line-height: 1.8; }
+    .fade-in{ opacity:0; transform: translateY(8px); }
+    .fade-in.show{ opacity:1; transform: translateY(0); transition: opacity .55s ease, transform .55s ease; }
 
-    /* subtle dashed connector */
-    .dash{
-      background-image: linear-gradient(to bottom, rgba(120,120,130,.45) 33%, rgba(0,0,0,0) 0%);
-      background-position: left;
-      background-size: 2px 10px;
-      background-repeat: repeat-y;
-      opacity: .35;
+    .footer{
+      margin-top: 26px;
+      padding: 22px 0 34px;
+      border-top: 1px solid rgb(var(--border));
+      color: rgb(var(--muted));
+      font-size: 13px;
     }
+    .footer a{ text-decoration: underline; text-underline-offset: 3px; }
 
-    /* mark for search highlights */
-    mark{
-      background: rgba(6,182,212,.22);
-      color: inherit;
-      padding: 0 .15em;
-      border-radius: .35em;
-    }
-
-    @media print{
-      .no-print{ display:none !important; }
-      .card{ box-shadow:none !important; }
-      body{ background:#fff !important; }
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; scroll-behavior:auto !important; }
+      .fade-in{ opacity:1 !important; transform:none !important; }
     }
   </style>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          boxShadow: { soft: "0 14px 40px rgba(0,0,0,.12)" }
-        }
-      }
-    }
-  </script>
 </head>
-
-<body class="grid-bg">
-  <!-- Top bar -->
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 supports-[backdrop-filter]:dark:bg-black/40 border-b"
-          style="border-color: rgb(var(--border));">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="h-16 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="h-9 w-9 rounded-xl flex items-center justify-center border"
-               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
-            <i class="fa-solid fa-layer-group" style="color: rgb(var(--accent));"></i>
-          </div>
-          <div class="min-w-0">
-            <div class="text-sm font-semibold tracking-tight truncate">史喜洋快速会议 · 可视化纪要</div>
-            <div class="text-xs" style="color: rgb(var(--muted));">企业融资 · 供应链金融 · 风控 · 获客</div>
-          </div>
+<body>
+  <!-- Topbar -->
+  <header class="topbar" role="banner">
+    <div class="container topbar-inner">
+      <a class="brand" href="#top" aria-label="返回顶部">
+        <div class="logo" aria-hidden="true">
+          <!-- bolt icon -->
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M13 2 3 14h8l-1 8 11-14h-8l0-6Z" fill="currentColor"/>
+          </svg>
         </div>
-
-        <div class="flex items-center gap-2">
-          <div class="relative hidden sm:block">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
-            <input id="searchInput" class="focus-ring w-80 rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
-              style="border-color: rgb(var(--border));"
-              placeholder="搜索：应收账款 / 保理 / 商票 / 电商垫资 / 融资租赁 / 征信…" />
-          </div>
-
-          <button id="themeBtn" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
-                  style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .10);">
-            <i id="themeIcon" class="fa-solid fa-moon" style="color: rgb(var(--accent2));"></i>
-            <span class="hidden sm:inline">深浅色</span>
-          </button>
-
-          <a href="#author" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
-             style="border-color: rgb(var(--border));">
-            <i class="fa-solid fa-circle-info text-xs" style="color: rgb(var(--muted));"></i>
-            <span class="hidden sm:inline">作者</span>
-          </a>
+        <div>
+          <h1>企业融资可视化纪要</h1>
+          <p>史喜洋｜快速会议｜2026-01-17 ~ 01-18</p>
         </div>
+      </a>
+
+      <div class="search" role="search" aria-label="全文搜索">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" style="width:16px;height:16px;color:rgb(var(--muted));">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="q" type="search" placeholder="搜索：报表 / 应收 / 存货 / 商票 / 电子凭证 / 租赁 / 保理 / 电商 / 酒店…" autocomplete="off" />
+        <span class="kbd">⌘K</span>
       </div>
 
-      <div class="pb-3 sm:hidden">
-        <div class="relative">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
-          <input id="searchInputMobile" class="focus-ring w-full rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
-            style="border-color: rgb(var(--border));"
-            placeholder="搜索关键点…" />
-        </div>
+      <div class="row" style="gap:10px;">
+        <button id="themeBtn" class="btn" type="button" aria-label="切换深浅色">
+          <svg id="themeIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21 12.2A8.2 8.2 0 0 1 11.8 3a6.6 6.6 0 1 0 9.2 9.2Z" fill="currentColor"/>
+          </svg>
+          <span class="muted" style="font-size:13px;">主题</span>
+        </button>
+        <button id="authorBtn" class="btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" fill="currentColor"/>
+            <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="muted" style="font-size:13px;">作者</span>
+        </button>
       </div>
     </div>
   </header>
 
   <!-- Hero -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-8">
-    <div class="reveal">
-      <div class="flex flex-col lg:flex-row lg:items-end gap-6">
-        <div class="flex-1 min-w-0">
-          <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
-               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .08);">
-            <span class="h-1.5 w-1.5 rounded-full" style="background: rgb(var(--accent2));"></span>
-            <span style="color: rgb(var(--muted));">从“会议纪要”到“可执行融资地图”</span>
-          </div>
+  <section id="top" class="hero">
+    <div class="container">
+      <h2>把“企业融资”拆成一张可执行地图</h2>
+      <p class="subtitle">
+        这份页面把多场“史喜洋快速会议”的机器纪要，重构为 <b>可读、可查、可复用</b> 的融资方法论与场景库。
+        你会看到：从财务报表抓融资机会、从上下游场景设计资金嵌入、从票据/电子凭证选择融资属性，到租赁/保理/电商/酒店等行业打法。
+      </p>
 
-          <h1 class="serif mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-            企业融资与供应链金融：<span style="color: rgb(var(--accent));">一张可复用的实战框架</span>
-          </h1>
-
-          <p class="mt-4 text-base sm:text-lg prose-like" style="color: rgb(var(--muted));">
-            这套纪要的价值不在“知识点多”，而在于它把融资拆成一条<strong>可落地的因果链</strong>：
-            <span class="font-semibold">财务报表 → 上下游场景 → 资金用途 → 工具选择 → 风控动作 → 交付与分润</span>。
-            当你能沿着这条链定位问题，融资就从“撞大运”变成“工程化匹配”。
-          </p>
-
-          <div class="mt-6 flex flex-wrap gap-2">
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-sitemap" style="color: rgb(var(--accent));"></i> 方法论
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-file-invoice" style="color: rgb(var(--accent));"></i> 报表与征信
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-arrows-spin" style="color: rgb(var(--accent));"></i> 供应链工具
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent));"></i> 风控要点
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-bullhorn" style="color: rgb(var(--accent));"></i> 新媒体获客
-            </span>
-          </div>
+      <div class="meta">
+        <div class="tag">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 3h10a2 2 0 0 1 2 2v14l-7-3-7 3V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" />
+          </svg>
+          <span>主题：企业融资 · 供应链金融 · 票据/电子凭证 · 租赁/保理</span>
         </div>
-
-        <!-- Quick facts -->
-        <div class="card rounded-2xl p-5 w-full lg:w-[420px]">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速概览</div>
-              <div class="mt-1 text-lg font-semibold">这份纪要覆盖了什么？</div>
-            </div>
-            <div class="h-10 w-10 rounded-xl flex items-center justify-center border"
-                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
-              <i class="fa-solid fa-gauge-high" style="color: rgb(var(--accent2));"></i>
-            </div>
-          </div>
-
-          <div class="mt-4 grid grid-cols-2 gap-3">
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">会议场次</div>
-              <div class="mt-1 text-2xl font-bold">5+</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">1/17–1/18 多场</div>
-            </div>
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">核心主轴</div>
-              <div class="mt-1 text-2xl font-bold">6</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">报表/场景/工具/风控/沟通/获客</div>
-            </div>
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">高频工具</div>
-              <div class="mt-1 text-2xl font-bold">保理</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">暗保理 / 反向保理 / 供应链票据</div>
-            </div>
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">适用行业</div>
-              <div class="mt-1 text-2xl font-bold">电商</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">酒店/学校/制造/快消等</div>
-            </div>
-          </div>
-
-          <div class="mt-4 text-xs" style="color: rgb(var(--muted));">
-            <span class="mono">Aha</span>：融资不是“找产品”，而是“找<strong>资金嵌入点</strong> + <strong>可控风险</strong>”。
-          </div>
+        <div class="tag">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M8 7V3m8 4V3M4 9h16M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>时间：2026-01-17 ～ 2026-01-18（多场）</span>
+        </div>
+        <div class="tag">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M21 12a9 9 0 1 1-9-9 9 9 0 0 1 9 9Z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span>用途：培训复盘 / 新人上手 / 方案设计 / 客户沟通</span>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Main -->
-  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- Left / TOC -->
-      <aside class="lg:col-span-3">
-        <div class="card rounded-2xl p-4 sticky top-24 no-print">
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold">目录</div>
-            <button id="scrollTopBtn" class="btn text-xs px-2 py-1 rounded-lg border"
-              style="border-color: rgb(var(--border)); color: rgb(var(--muted));">
-              <i class="fa-solid fa-arrow-up"></i>
-            </button>
+  <main class="container mt-6" id="app">
+    <div class="grid grid-12">
+      <!-- Left / Main content -->
+      <section class="col-12 lg-col-8">
+        <!-- KPI + Map -->
+        <div class="card fade-in" id="sec-overview">
+          <div class="card-hd">
+            <h3>一眼看懂：融资“抓手地图”</h3>
+            <span class="pill">方法论 → 报表 → 场景 → 工具 → 风控</span>
           </div>
-          <nav class="mt-3 space-y-1 text-sm" id="toc"></nav>
+          <div class="card-bd">
+            <div class="grid" style="grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px;">
+              <div class="kpi">
+                <div class="v" id="kpiSessions">6</div>
+                <div class="k">拆解会议场次（01/17×3 + 01/18×3）</div>
+              </div>
+              <div class="kpi">
+                <div class="v" id="kpiModules">5</div>
+                <div class="k">核心模块：方法论 / 报表 / 场景 / 工具 / 行业打法</div>
+              </div>
+              <div class="kpi">
+                <div class="v" id="kpiActions">10+</div>
+                <div class="k">待办清单：资方库 / 白名单 / ABS / 租赁机构等</div>
+              </div>
+            </div>
 
-          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
-            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速过滤</div>
-            <div class="mt-2 flex flex-wrap gap-2" id="quickFilters"></div>
+            <div class="mt-4" style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.35); padding: 14px;">
+              <div class="section-title">
+                <h4>融资机会的三条主线（这就是 Aha Moment）</h4>
+                <small>你不是“找产品”，你是在“找金融属性”。</small>
+              </div>
+              <ul class="list" style="margin-top:10px;">
+                <li class="li searchable">
+                  <span class="dot" aria-hidden="true"></span>
+                  <div>
+                    <b>从财务报表找“可金融化资产”</b>：应收账款、存货、设备等——先把资产变成授信语言，再谈产品匹配。
+                  </div>
+                </li>
+                <li class="li searchable">
+                  <span class="dot" aria-hidden="true" style="background: rgba(var(--accent2), .95);"></span>
+                  <div>
+                    <b>从上下游场景找“资金嵌入点”</b>：采购/生产/销售每个节点都对应不同的付款方式、账期与风控动作。
+                  </div>
+                </li>
+                <li class="li searchable">
+                  <span class="dot" aria-hidden="true" style="background: rgb(var(--success));"></span>
+                  <div>
+                    <b>从历史融资机构“对标迁移”</b>：看企业过去拿过谁的钱 → 就能更快找到同类型、同偏好的新资方。
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mt-4">
+              <div class="section-title">
+                <h4>可视化：从“资产”到“工具”的决策路径</h4>
+                <small>纯 SVG，无外链</small>
+              </div>
+              <div style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.25); padding: 12px;">
+                <svg id="flowSvg" viewBox="0 0 900 260" width="100%" height="260" role="img" aria-label="融资决策路径示意">
+                  <!-- drawn by JS in next block -->
+                </svg>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
-            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">提示</div>
-            <p class="mt-2 text-xs leading-relaxed" style="color: rgb(var(--muted));">
-              你可以用右上角搜索：比如输入“暗保理”“商票保贴”“电商垫资”“融资租赁”“征信”，页面会高亮并折叠无关模块。
+        <!-- Methodology -->
+        <div class="card fade-in mt-6" id="sec-method">
+          <div class="card-hd">
+            <h3>企业融资方法论：从“信息”到“方案”的 SOP</h3>
+            <span class="pill">结构化思考</span>
+          </div>
+          <div class="card-bd">
+            <ul class="list">
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div><b>第一步：先聊产业与上下游，不要一上来问负债。</b>先通过行业/排名/产品建立信任，再逐步进入融资结构与征信。</div>
+              </li>
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div><b>第二步：把企业“资金用途”问清楚。</b>避免模糊的“补流”，要落到采购、库存、账期周转、工资、研发、囤货等具体用途。</div>
+              </li>
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div><b>第三步：用报表把故事变成“授信语言”。</b>资产负债表看应收/存货/设备，利润表看利润质量，增值税表看开票与营收差。</div>
+              </li>
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div><b>第四步：用场景决定产品。</b>采购付款方式、结算模式、生产周期、库存、下游账期——决定你做银行/保理/租赁/票据/电子凭证。</div>
+              </li>
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div><b>第五步：用“可控性”决定风控动作。</b>能否确权？能否改回款账户？能否控 U 盾？能否控货权？可控性越强，融资越容易。</div>
+              </li>
+            </ul>
+
+            <div class="mt-4" style="display:flex; gap:12px; flex-wrap:wrap;">
+              <span class="pill">沟通策略：赞美/认可 → 信任 → 信息</span>
+              <span class="pill">角色变化：前期乙方 → 中期共创 → 后期甲方</span>
+              <span class="pill">团队：小团队更适配（信任/放权/信息差）</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial statements -->
+        <div class="card fade-in mt-6" id="sec-fin">
+          <div class="card-hd">
+            <h3>财务报表：融资机构真正看的是什么</h3>
+            <span class="pill">报表 → 风险视角</span>
+          </div>
+          <div class="card-bd">
+            <div class="section-title">
+              <h4>三张表三种问题</h4>
+              <small>把“表”翻译成“融资风险”</small>
+            </div>
+
+            <ul class="list">
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div>
+                  <b>资产负债表：</b>重点盯 <b>应收账款 / 存货 / 设备</b> 等有金融属性的科目（可质押、可转让、可监管）。
+                </div>
+              </li>
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div>
+                  <b>利润表：</b>看营收、净利润、补贴。尤其注意 <b>利润是否过度依赖政府补贴</b>（融资机构会担心利润可持续性）。
+                </div>
+              </li>
+              <li class="li searchable">
+                <span class="dot"></span>
+                <div>
+                  <b>增值税/开票：</b>看 <b>开票与营收差</b>，这会直接影响风险评估（真实性、税务合规、交易闭环）。
+                </div>
+              </li>
+            </ul>
+
+            <div class="mt-4">
+              <div class="section-title">
+                <h4>可视化：报表抓手优先级（示意）</h4>
+                <small>下一块 JS 会绘制雷达/条形</small>
+              </div>
+              <div style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.25); padding: 12px;">
+                <canvas id="radar" width="860" height="300" style="width:100%; height:300px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supply chain -->
+        <div class="card fade-in mt-6" id="sec-scene">
+          <div class="card-hd">
+            <h3>上下游场景：资金嵌入的真实发生地</h3>
+            <span class="pill">采购/生产/销售</span>
+          </div>
+          <div class="card-bd">
+            <div class="grid" style="grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px;">
+              <div class="kpi searchable">
+                <div class="v">上游</div>
+                <div class="k">采购来源、付款方式、结算模式 → 决定资金需求节点</div>
+              </div>
+              <div class="kpi searchable">
+                <div class="v">中游</div>
+                <div class="k">企业类型、规模、生产周期、库存 → 决定融资方式（库压/货押/租赁）</div>
+              </div>
+              <div class="kpi searchable">
+                <div class="v">下游</div>
+                <div class="k">销售渠道、付款方式、账期 → 决定现金流与应收融资</div>
+              </div>
+            </div>
+
+            <div class="mt-4" style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.35); padding: 14px;">
+              <div class="section-title">
+                <h4>付款方式的“融资属性”</h4>
+                <small>同样是交易，工具不同，金融属性天差地别</small>
+              </div>
+
+              <ul class="list" style="margin-top:10px;">
+                <li class="li searchable">
+                  <span class="dot"></span>
+                  <div><b>现金 / 银行转账：</b>最直观，但缺少“可融资凭证”。</div>
+                </li>
+                <li class="li searchable">
+                  <span class="dot"></span>
+                  <div><b>商票：</b>必须确认是否 <b>银行保贴</b>，否则流通性差、折价高。</div>
+                </li>
+                <li class="li searchable">
+                  <span class="dot"></span>
+                  <div><b>银票 / 供应链票据：</b>依托银行授信，可拆分流转，期限通常最长 6 个月。</div>
+                </li>
+                <li class="li searchable">
+                  <span class="dot"></span>
+                  <div><b>电子债权凭证（例：群星券等）：</b>期限更长（可到 12 个月），但多在系统内流转，融资成本更高。</div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mt-4">
+              <div class="section-title">
+                <h4>可视化：场景 → 工具（对照矩阵）</h4>
+                <small>下一块 JS 绘制热力矩阵</small>
+              </div>
+              <div id="matrixWrap" style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.25); padding: 12px; overflow:auto;">
+                <div id="matrix" style="min-width: 740px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Industry playbooks -->
+        <div class="card fade-in mt-6" id="sec-industry">
+          <div class="card-hd">
+            <h3>行业打法：电商 / 酒店 / 学校等“特殊场景”</h3>
+            <span class="pill">案例化落地</span>
+          </div>
+          <div class="card-bd">
+            <div class="section-title">
+              <h4>电商平台账期与快消经销商</h4>
+              <small>账期、备货、垫资、仓储监管</small>
+            </div>
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div>经销商备货前置（春节前可能囤货 2000万～5000万），平台账期通常 15～21 天 → 资金压力集中爆发。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>直播带货场景会出现达人/店铺垫资，本质是“账期垫付 + 平台信用风控”。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>国企贸易托盘/嵌入：用采购合同嵌入电商链路，配合京东仓监管，形成闭环（预付、库存、账期垫资）。</div></li>
+            </ul>
+
+            <div class="section-title mt-4">
+              <h4>酒店行业融资：四种常见模型</h4>
+              <small>数据 / 收费权 / 设备 / 装修代建</small>
+            </div>
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div><b>连锁酒店：</b>收费权质押（更容易标准化）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>单体酒店：</b>包房模式（依托 OTA 销售数据，按历史数据打折放款，利息前置）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>装修贷/代建：</b>酒店/学校/医院适用，装修期免息，营业后分期，金额可达收入三倍。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>设备租赁：</b>非品牌酒店可做设备租赁，取决于租赁机构风控模型。</div></li>
+            </ul>
+
+            <div class="section-title mt-4">
+              <h4>学校行业（补充汇总）</h4>
+              <small>收费权、补贴、装修、信用</small>
+            </div>
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div>学费收费权质押、政府补贴保理、信用贷、装修代建等组合打法。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>额度评估可参考：收入×倍数（案例提到“三倍净利润”等口径）。</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Leasing & Factoring -->
+        <div class="card fade-in mt-6" id="sec-products">
+          <div class="card-hd">
+            <h3>金融工具：融资租赁 & 保理（应收账款）</h3>
+            <span class="pill">产品与风控</span>
+          </div>
+          <div class="card-bd">
+            <div class="section-title">
+              <h4>融资租赁：材料优先级（先拿 4 项）</h4>
+              <small>避免“材料地狱”，先锁定可做性</small>
+            </div>
+
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div>三年财报（24/25/26 或近三年）</div></li>
+              <li class="li searchable"><span class="dot"></span><div>对公流水（或可辅助的私流水）</div></li>
+              <li class="li searchable"><span class="dot"></span><div>企业征信 / 法人征信</div></li>
+              <li class="li searchable"><span class="dot"></span><div>设备清单（含发票、是否已抵押/质押）</div></li>
+            </ul>
+
+            <div class="section-title mt-4">
+              <h4>租赁授信常见五种口径（归纳）</h4>
+              <small>不同机构模型不同，但多落在这五类</small>
+            </div>
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div>开票额的 10%～15%</div></li>
+              <li class="li searchable"><span class="dot"></span><div>收费权的倍数</div></li>
+              <li class="li searchable"><span class="dot"></span><div>设备折扣（原值/净值；部分机构原值×65% + 35%信用）</div></li>
+              <li class="li searchable"><span class="dot"></span><div>结息 / 资金使用率口径（含保证金、保险、手续费）</div></li>
+              <li class="li searchable"><span class="dot"></span><div>月末余额口径</div></li>
+            </ul>
+
+            <div class="section-title mt-4">
+              <h4>应收账款融资 / 保理：四种模式（会议关键词）</h4>
+              <small>确权难、暗保理受欢迎、买断/反向各有场景</small>
+            </div>
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div><b>确权保理（明保理）：</b>需要下游配合确权，成功率往往不高。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>暗保理：</b>更受市场欢迎；风控动作常见：签收通知函、改回款账户、控U盾等。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>买断保理：</b>上市公司/国企审计、IPO 阶段用于报表“美化”较常见。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>反向保理：</b>核心企业解决应付账款，利息较低（会议提到约年化 4%～6%）。</div></li>
+            </ul>
+
+            <div class="mt-4" style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.35); padding: 14px;">
+              <div class="section-title">
+                <h4>一句话抓住风控底层</h4>
+                <small>融资 = 可控性 × 真实性 × 偿付来源</small>
+              </div>
+              <p class="muted" style="margin:0; line-height:1.85;">
+                你可以把几乎所有融资产品，抽象成三问：<b>1）我控得住吗？</b>（货权/回款/凭证/系统内流转）；
+                <b>2）交易真实吗？</b>（开票明细、签收、对账、税务一致性）；
+                <b>3）钱从哪还？</b>（销售回款、核心企业授信、收费权、资产处置）。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tasks -->
+        <div class="card fade-in mt-6" id="sec-todo">
+          <div class="card-hd">
+            <h3>会议待办：把知识变成资产</h3>
+            <span class="pill">可执行清单</span>
+          </div>
+          <div class="card-bd">
+            <ul class="list" id="todoList">
+              <li class="li searchable"><span class="dot"></span><div>详细拆解：应收账款转让 vs 应收账款质押的应用场景与催收/催减案例。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>输出：产业供应链金融产品信息与风控逻辑（便于参与者应用）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>整理：多家银行核心企业白名单及其产品细则文档（精准匹配供应商/经销商）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>深入研究：资产证券化（供应链票据 ABS vs 普通 ABS 的差异）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>明天分享：委托加工模式的管理方式（监管/物权/流水/成本）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>寻找：可做“先息后本”的租赁机构（用于特殊现金流行业）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>整理：融资租赁全盘规划流程（承租主体、租赁物、融资架构、担保方式）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>更新：每天通报新增资方并更新资方库（沉淀可复用资源）。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>内容运营：公众号热点文章 + 个人IP属性，形成低成本获客与信任闭环。</div></li>
+              <li class="li searchable"><span class="dot"></span><div>能力建设：准备 100 个选题与参考文章，结合 AI 接入提高写作效率。</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Further reading -->
+        <div class="card fade-in mt-6" id="sec-reading">
+          <div class="card-hd">
+            <h3>进一步阅读（精选 5 本/论文）</h3>
+            <span class="pill">打底 + 升维</span>
+          </div>
+          <div class="card-bd">
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div><b>《财务报表分析与证券估值》</b>（Stephen H. Penman）——把报表拆成“价值与风险语言”。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>《供应链金融：信用、风险与创新》</b>（国内多版本，选口碑较好的高校教材版）——系统理解票据、保理与场景化金融。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>《银行信贷风险管理》</b>（偏实务的版本）——理解授信逻辑、风险偏好与风控动作。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>Gelsomino et al. (2016) “Supply Chain Finance: A Literature Review”</b>——供应链金融学术综述，建立框架。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>《资产证券化：结构、定价与实务》</b>（ABS 实务书）——对应你会议里提到的“供应链票据 ABS”研究方向。</div></li>
+            </ul>
+            <p class="muted mt-3" style="margin-bottom:0; line-height:1.8;">
+              备注：书名存在不同译名/版本，你采购时优先看作者与出版社口碑；论文可用关键词检索标题即可。
             </p>
           </div>
         </div>
+
+        <!-- Footer / Author -->
+        <footer class="footer fade-in" id="author">
+          <div class="row between wrap">
+            <div>
+              <div style="font-weight:850; color: rgb(var(--text));">作者信息</div>
+              <div class="mt-2">作者姓名：<b>程海晖</b></div>
+              <div class="mt-2">版权信息：© <span id="year"></span> 程海晖 · All rights reserved.</div>
+            </div>
+            <div class="row wrap" style="gap:10px;">
+              <a class="btn" href="https://github.com/binglingling906" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.2-3.4-1.2-.4-1.1-1-1.4-1-1.4-.9-.6.1-.6.1-.6 1 .1 1.6 1 1.6 1 .9 1.6 2.4 1.1 3 .9.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7 3.6 3.6 0 0 1 .1-2.7s.8-.3 2.7 1a9.3 9.3 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1a3.6 3.6 0 0 1 .1 2.7 3.9 3.9 0 0 1 1 2.7c0 3.9-2.4 4.7-4.6 5 .3.3.6.9.6 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" fill="currentColor"/></svg>
+                <span class="muted">GitHub</span>
+              </a>
+              <a class="btn" href="https://x.com/" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.9-6.4L6.2 22H3l7.3-8.4L1 2h6.3l4.4 5.8L18.9 2Zm-1.1 18h1.7L5.1 4H3.3l14.5 16Z" fill="currentColor"/></svg>
+                <span class="muted">Twitter/X</span>
+              </a>
+              <a class="btn" href="https://www.linkedin.com/" target="_blank" rel="noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.9 6.8a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6ZM4.7 21.8V9h4.4v12.8H4.7Zm7.1 0V9h4.2v1.8h.1c.6-1.1 2-2.2 4.1-2.2 4.4 0 5.2 2.9 5.2 6.6v6.6H21v-5.8c0-1.4 0-3.2-2-3.2s-2.3 1.5-2.3 3.1v5.9h-4.9Z" fill="currentColor"/></svg>
+                <span class="muted">LinkedIn</span>
+              </a>
+            </div>
+          </div>
+        </footer>
+      </section>
+
+      <!-- Right / Sidebar -->
+      <aside class="col-12 lg-col-4">
+        <div class="card fade-in" id="sec-outline">
+          <div class="card-hd">
+            <h3>阅读导航</h3>
+            <span class="pill">一页掌握</span>
+          </div>
+          <div class="card-bd">
+            <ul class="list" style="gap:10px;">
+              <li class="li"><span class="dot"></span><div><a href="#sec-overview"><b>抓手地图</b></a><div class="muted">三条主线 + 决策路径图</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-method"><b>方法论 SOP</b></a><div class="muted">从沟通到方案的标准流程</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-fin"><b>报表分析</b></a><div class="muted">资产/利润/开票三张表</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-scene"><b>上下游场景</b></a><div class="muted">采购/生产/销售的嵌入点</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-industry"><b>行业打法</b></a><div class="muted">电商/酒店/学校等</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-products"><b>租赁 & 保理</b></a><div class="muted">材料、口径、风控动作</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-todo"><b>待办清单</b></a><div class="muted">沉淀资方库与产品库</div></div></li>
+              <li class="li"><span class="dot"></span><div><a href="#sec-reading"><b>进一步阅读</b></a><div class="muted">5 本/论文打底升维</div></div></li>
+            </ul>
+
+            <div class="mt-4" style="border:1px solid rgba(var(--border),.9); border-radius: var(--radius2); background: rgba(var(--panel),.35); padding: 12px;">
+              <div class="section-title">
+                <h4>本页怎么用</h4>
+                <small>给你一个“训练方式”</small>
+              </div>
+              <ol class="muted" style="margin: 0; padding-left: 18px; line-height: 1.9;">
+                <li>先用顶部搜索，定位你当前客户的关键词（电商/应收/设备/票据）。</li>
+                <li>对照“场景 → 工具矩阵”，选出 1-2 个可落地产品。</li>
+                <li>回到“风控底层三问”，补齐可控性动作（回款/货权/确权）。</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="card fade-in mt-6" id="sec-notes">
+          <div class="card-hd">
+            <h3>补充洞察</h3>
+            <span class="pill">给“融资顾问”的提醒</span>
+          </div>
+          <div class="card-bd">
+            <ul class="list">
+              <li class="li searchable"><span class="dot"></span><div><b>融资不是“产品搬运”，是“风控可控性工程”。</b>同样的企业，换一个可控节点就能从不可做变可做。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>别追“额度”，先追“闭环”。</b>能闭环的交易与回款，额度会自己长出来。</div></li>
+              <li class="li searchable"><span class="dot"></span><div><b>把资方库当成“资产”，不是信息。</b>每次成交都要反向补齐：偏好、口径、材料、拒单原因。</div></li>
+            </ul>
+          </div>
+        </div>
       </aside>
+    </div>
+  </main>
 
-      <!-- Content -->
-      <section class="lg:col-span-9 space-y-6" id="contentRoot">
+  <!-- Floating TOC -->
+  <nav class="toc collapsed" id="toc" aria-label="页面目录">
+    <div class="toc-hd" id="tocToggle" title="展开/收起目录">
+      <div>
+        <strong>目录</strong>
+        <span class="hint">点击展开</span>
+      </div>
+      <span class="pill" id="hitCount">命中：0</span>
+    </div>
+    <div class="toc-bd" id="tocBody">
+      <a href="#sec-overview" data-target="sec-overview"><span>抓手地图</span><span class="muted">01</span></a>
+      <a href="#sec-method" data-target="sec-method"><span>方法论 SOP</span><span class="muted">02</span></a>
+      <a href="#sec-fin" data-target="sec-fin"><span>财务报表</span><span class="muted">03</span></a>
+      <a href="#sec-scene" data-target="sec-scene"><span>上下游场景</span><span class="muted">04</span></a>
+      <a href="#sec-industry" data-target="sec-industry"><span>行业打法</span><span class="muted">05</span></a>
+      <a href="#sec-products" data-target="sec-products"><span>租赁 & 保理</span><span class="muted">06</span></a>
+      <a href="#sec-todo" data-target="sec-todo"><span>会议待办</span><span class="muted">07</span></a>
+      <a href="#sec-reading" data-target="sec-reading"><span>进一步阅读</span><span class="muted">08</span></a>
+      <a href="#author" data-target="author"><span>作者信息</span><span class="muted">09</span></a>
+    </div>
+  </nav>
+</body>
+<script>
+/* =========================================================
+   企业融资可视化纪要 - 无外链脚本
+   功能：
+   - 深浅色：默认跟随系统，手动切换并持久化
+   - ⌘K 聚焦搜索，搜索命中高亮与计数
+   - 搜索过滤：只过滤 .searchable 项（不隐藏大结构，避免“空壳”感）
+   - 目录：折叠/展开、滚动高亮、点击平滑定位
+   - 可视化：
+     1) SVG 决策路径图（资产→场景→工具→风控）
+     2) Canvas 雷达/条形混合图（报表抓手优先级示意）
+     3) 场景→工具矩阵（热力矩阵）
+   ========================================================= */
 
-        <!-- Aha moment -->
-        <section id="aha" class="reveal card rounded-2xl p-6 searchable">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h2 class="serif text-2xl font-bold tracking-tight">Aha Moment</h2>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                这份纪要真正教会你的，是一套<strong>“从信息到方案”的流水线</strong>。
-              </p>
-            </div>
-            <div class="h-11 w-11 rounded-2xl flex items-center justify-center border"
-              style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
-              <i class="fa-solid fa-bolt" style="color: rgb(var(--accent2));"></i>
-            </div>
-          </div>
+(() => {
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-          <blockquote class="mt-4 rounded-2xl border p-4 text-base sm:text-lg leading-relaxed"
-            style="border-color: rgb(var(--border)); background: rgba(var(--accent), .06);">
-            <span class="font-semibold">一句话洞察：</span>
-            <span>
-              企业融资不是“去问客户要负债”，而是先<strong>定位资金卡点</strong>（采购/库存/账期/工资/研发/囤货）
-              → 再用<strong>报表与票据</strong>证明真实性 → 最后选一个<strong>可控风控动作</strong>把风险关进笼子里。
-            </span>
-          </blockquote>
+  /* -----------------------------
+     1) Theme
+  ----------------------------- */
+  const THEME_KEY = "blm_theme";
+  const root = document.documentElement;
 
-          <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent));"></span>
-                <div class="text-sm font-semibold">输入</div>
-              </div>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                三张表（资产负债表/利润表/增值税） + 上下游合同/票据/回款路径
-              </p>
-            </div>
-            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent2));"></span>
-                <div class="text-sm font-semibold">处理</div>
-              </div>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                还原“采购→生产→销售”的资金流，找出账期与付款方式的融资属性
-              </p>
-            </div>
-            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--good));"></span>
-                <div class="text-sm font-semibold">输出</div>
-              </div>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                匹配：保理/租赁/供应链票据/电商垫资/货押托盘，并附风控动作清单
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Visual: Framework Map -->
-        <section id="framework" class="reveal card rounded-2xl p-6 searchable">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="serif text-2xl font-bold tracking-tight">融资“工程化”框架图</h2>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                用一张图把会议里分散的内容，压缩成可复用的工作流。
-              </p>
-            </div>
-            <i class="fa-solid fa-diagram-project text-lg" style="color: rgb(var(--muted));"></i>
-          </div>
-
-          <!-- Inline SVG (fast, no external images; effectively "webp-free") -->
-          <div class="mt-5 overflow-x-auto">
-            <div class="min-w-[860px] rounded-2xl border p-5"
-                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .04);">
-              <svg viewBox="0 0 980 260" width="100%" height="260" role="img" aria-label="融资工程化框架图">
-                <defs>
-                  <linearGradient id="g1" x1="0" x2="1">
-                    <stop offset="0" stop-color="rgba(79,70,229,.25)"></stop>
-                    <stop offset="1" stop-color="rgba(6,182,212,.20)"></stop>
-                  </linearGradient>
-                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(0,0,0,.18)"/>
-                  </filter>
-                </defs>
-
-                <!-- lanes -->
-                <rect x="18" y="18" rx="18" ry="18" width="944" height="224" fill="url(#g1)" stroke="rgba(120,120,130,.35)"></rect>
-
-                <!-- nodes -->
-                <g filter="url(#shadow)">
-                  <rect x="42" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="240" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="438" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="636" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="834" y="62" rx="14" ry="14" width="120" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                </g>
-
-                <!-- arrows -->
-                <g stroke="rgba(79,70,229,.75)" stroke-width="3" fill="none">
-                  <path d="M212 130 L232 130"></path>
-                  <path d="M410 130 L432 130"></path>
-                  <path d="M608 130 L630 130"></path>
-                  <path d="M806 130 L828 130"></path>
-                  <polygon points="232,130 224,124 224,136" fill="rgba(79,70,229,.75)"></polygon>
-                  <polygon points="432,130 424,124 424,136" fill="rgba(79,70,229,.75)"></polygon>
-                  <polygon points="630,130 622,124 622,136" fill="rgba(79,70,229,.75)"></polygon>
-                  <polygon points="828,130 820,124 820,136" fill="rgba(79,70,229,.75)"></polygon>
-                </g>
-
-                <!-- labels -->
-                <g font-family="Noto Sans SC, sans-serif" fill="rgba(17,24,39,.92)">
-                  <text x="62" y="92" font-size="14" font-weight="700">1) 信息采集</text>
-                  <text x="62" y="116" font-size="12">· 三大报表</text>
-                  <text x="62" y="136" font-size="12">· 征信/负债结构</text>
-                  <text x="62" y="156" font-size="12">· 合同/票据/回款</text>
-
-                  <text x="260" y="92" font-size="14" font-weight="700">2) 还原场景</text>
-                  <text x="260" y="116" font-size="12">· 采购/生产/销售</text>
-                  <text x="260" y="136" font-size="12">· 账期/付款方式</text>
-                  <text x="260" y="156" font-size="12">· 资金用途拆解</text>
-
-                  <text x="458" y="92" font-size="14" font-weight="700">3) 工具匹配</text>
-                  <text x="458" y="116" font-size="12">· 保理（明/暗/反向）</text>
-                  <text x="458" y="136" font-size="12">· 租赁 / 票据 / 电商垫资</text>
-                  <text x="458" y="156" font-size="12">· 货押 / 托盘 / 代采</text>
-
-                  <text x="656" y="92" font-size="14" font-weight="700">4) 风控动作</text>
-                  <text x="656" y="116" font-size="12">· 确权/签收/通知函</text>
-                  <text x="656" y="136" font-size="12">· 控回款账户/控U盾</text>
-                  <text x="656" y="156" font-size="12">· 仓储监管/物权控制</text>
-
-                  <text x="854" y="92" font-size="14" font-weight="700">5) 交付</text>
-                  <text x="854" y="116" font-size="12">· 材料清单</text>
-                  <text x="854" y="136" font-size="12">· 报价分润</text>
-                  <text x="854" y="156" font-size="12">· 复盘迭代</text>
-                </g>
-              </svg>
-
-              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">关键提醒</div>
-                  <div class="mt-1 text-sm font-semibold">先做“场景”，再谈“产品”</div>
-                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
-                    会议反复强调：别上来问负债，先把产业链讲清楚，信任自然建立。
-                  </p>
-                </div>
-                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">高频坑位</div>
-                  <div class="mt-1 text-sm font-semibold">“补流”是模糊表述</div>
-                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
-                    要把资金用途拆到“采购/库存/账期/工资/研发/囤货”等可验证节点。
-                  </p>
-                </div>
-                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">可复制优势</div>
-                  <div class="mt-1 text-sm font-semibold">风控动作清单化</div>
-                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
-                    暗保理为何更“受欢迎”？因为它把风险压在“控回款/控单据/控物权”的动作上。
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Timeline -->
-        <section id="timeline" class="reveal card rounded-2xl p-6 searchable">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="serif text-2xl font-bold tracking-tight">会议时间线</h2>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">把多场内容合并成“一个连续课程”。</p>
-            </div>
-            <i class="fa-solid fa-clock text-lg" style="color: rgb(var(--muted));"></i>
-          </div>
-
-          <div class="mt-5 grid grid-cols-1 gap-4">
-            <!-- item -->
-            <div class="flex gap-4">
-              <div class="flex flex-col items-center">
-                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
-                     style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
-                  <i class="fa-solid fa-chart-pie" style="color: rgb(var(--accent));"></i>
-                </div>
-                <div class="dash w-[2px] flex-1 mt-2"></div>
-              </div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-sm font-semibold">2026-01-17 09:30–10:30</span>
-                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                        style="background: rgba(var(--accent2), .10); border: 1px solid rgb(var(--border));">
-                    报表 + 场景 + 融资属性
-                  </span>
-                </div>
-                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                  三大抓手：财务报表（应收/存货/设备）、上下游资金嵌入、对标历史融资机构找新机构。
-                  重点：利润来源是否过度依赖政府补贴；增值税开票与营收差距的风险信号。
-                </p>
-              </div>
-            </div>
-
-            <div class="flex gap-4">
-              <div class="flex flex-col items-center">
-                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
-                     style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
-                  <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent2));"></i>
-                </div>
-                <div class="dash w-[2px] flex-1 mt-2"></div>
-              </div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-sm font-semibold">2026-01-17 11:08–12:08</span>
-                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                        style="background: rgba(var(--accent), .08); border: 1px solid rgb(var(--border));">
-                    负债/征信/供应链票据
-                  </span>
-                </div>
-                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                  初次接触企业：避免直问负债，先聊产业链并“赞美建立信任”。
-                  负债区分有息/无息；征信区分历史/当前原因。
-                  核心企业赋能上下游金融（授信/低息）是关键。
-                  区分供应链票据（最长6个月、可拆分流转）与电子债权凭证（期限更长但系统内流通、成本高）。
-                </p>
-              </div>
-            </div>
-
-            <div class<!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <title>史喜洋快速会议 · 企业融资与供应链金融（可视化纪要）</title>
-  <meta name="description" content="将多场企业融资与供应链金融会议纪要转为Linear风格中文可视化网页：摘要、图表、时间线、工具矩阵、SOP与进一步阅读。" />
-
-  <!-- Fonts (<= 3) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- TailwindCSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-  <style>
-    :root{
-      --bg: 255 255 255;
-      --fg: 17 24 39;
-      --muted: 107 114 128;
-      --card: 249 250 251;
-      --border: 229 231 235;
-      --accent: 79 70 229;     /* indigo */
-      --accent2: 6 182 212;    /* cyan */
-      --good: 16 185 129;      /* emerald */
-      --warn: 245 158 11;      /* amber */
-      --bad: 239 68 68;        /* red */
-      --shadow: 0 14px 45px rgba(0,0,0,.10);
+  function systemPrefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function applyTheme(mode) {
+    // mode: "dark" | "light" | "system"
+    if (mode === "system") {
+      root.dataset.theme = systemPrefersDark() ? "dark" : "light";
+    } else {
+      root.dataset.theme = mode;
     }
-    :root.dark{
-      --bg: 10 10 12;
-      --fg: 243 244 246;
-      --muted: 156 163 175;
-      --card: 16 16 20;
-      --border: 38 38 44;
-      --accent: 129 140 248;
-      --accent2: 34 211 238;
-      --good: 52 211 153;
-      --warn: 251 191 36;
-      --bad: 248 113 113;
-      --shadow: 0 22px 70px rgba(0,0,0,.45);
+    // update icon
+    const icon = $("#themeIcon");
+    const isDark = root.dataset.theme === "dark";
+    if (icon) {
+      icon.innerHTML = isDark
+        ? '<path d="M21 12.2A8.2 8.2 0 0 1 11.8 3a6.6 6.6 0 1 0 9.2 9.2Z" fill="currentColor"/>'
+        : '<path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" fill="currentColor"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
     }
+  }
+  function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY) || "system";
+    applyTheme(saved);
+    // If system changes, update in real time when mode is system
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+        const cur = localStorage.getItem(THEME_KEY) || "system";
+        if (cur === "system") applyTheme("system");
+      });
+    }
+  }
+  $("#themeBtn")?.addEventListener("click", () => {
+    const saved = localStorage.getItem(THEME_KEY) || "system";
+    const next = saved === "system" ? "dark" : saved === "dark" ? "light" : "system";
+    localStorage.setItem(THEME_KEY, next);
+    applyTheme(next);
+  });
 
-    body{
-      font-family: "Noto Sans SC", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft Yahei", sans-serif;
-      background: rgb(var(--bg));
-      color: rgb(var(--fg));
-      text-rendering: geometricPrecision;
-    }
-    .serif{ font-family: "Noto Serif SC", ui-serif, Georgia, "Times New Roman", serif; }
-    .mono{ font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-
-    .grid-bg{
-      background-image:
-        linear-gradient(to right, rgba(120,120,130,.06) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(120,120,130,.06) 1px, transparent 1px);
-      background-size: 36px 36px;
-    }
-    :root.dark .grid-bg{
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
-    }
-
-    .reveal{
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    .reveal.is-visible{
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .focus-ring:focus{
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(99,102,241,.22);
-      border-color: rgba(99,102,241,.65);
-    }
-
-    .card{
-      background: rgb(var(--card));
-      border: 1px solid rgb(var(--border));
-      box-shadow: 0 1px 0 rgba(0,0,0,.02);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-    }
-    .card:hover{
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      border-color: rgba(99,102,241,.45);
-    }
-
-    .btn{ transition: transform .16s ease, filter .16s ease; }
-    .btn:hover{ transform: scale(1.02); filter: brightness(1.02); }
-
-    .pill{
-      border: 1px solid rgb(var(--border));
-      background: rgba(var(--accent), .08);
-      color: rgb(var(--fg));
-    }
-
-    .prose-like p{ line-height: 1.85; }
-    .prose-like li{ line-height: 1.8; }
-
-    /* subtle dashed connector */
-    .dash{
-      background-image: linear-gradient(to bottom, rgba(120,120,130,.45) 33%, rgba(0,0,0,0) 0%);
-      background-position: left;
-      background-size: 2px 10px;
-      background-repeat: repeat-y;
-      opacity: .35;
-    }
-
-    /* mark for search highlights */
-    mark{
-      background: rgba(6,182,212,.22);
-      color: inherit;
-      padding: 0 .15em;
-      border-radius: .35em;
-    }
-
-    @media print{
-      .no-print{ display:none !important; }
-      .card{ box-shadow:none !important; }
-      body{ background:#fff !important; }
-    }
-  </style>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          boxShadow: { soft: "0 14px 40px rgba(0,0,0,.12)" }
+  /* -----------------------------
+     2) Fade-in on view
+  ----------------------------- */
+  function initFadeIn() {
+    const els = $$(".fade-in");
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("show");
+          io.unobserve(e.target);
         }
       }
+    }, { threshold: 0.08 });
+    els.forEach(el => io.observe(el));
+  }
+
+  /* -----------------------------
+     3) TOC
+  ----------------------------- */
+  function initTOC() {
+    const toc = $("#toc");
+    const toggle = $("#tocToggle");
+    const links = $$("#tocBody a");
+    if (!toc || !toggle || links.length === 0) return;
+
+    toggle.addEventListener("click", () => {
+      toc.classList.toggle("collapsed");
+      const hint = toggle.querySelector(".hint");
+      if (hint) hint.textContent = toc.classList.contains("collapsed") ? "点击展开" : "点击收起";
+    });
+
+    // Scroll spy
+    const targets = links
+      .map(a => document.getElementById(a.dataset.target))
+      .filter(Boolean);
+
+    const spy = new IntersectionObserver((entries) => {
+      // choose the most visible intersecting section
+      const visible = entries.filter(e => e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if (!visible) return;
+      const id = visible.target.id;
+      links.forEach(a => a.classList.toggle("active", a.dataset.target === id));
+    }, { root: null, threshold: [0.1, 0.2, 0.35, 0.5] });
+
+    targets.forEach(t => spy.observe(t));
+  }
+
+  /* -----------------------------
+     4) Search
+     - Filter: only .searchable elements
+     - Highlight matches
+  ----------------------------- */
+  function escapeReg(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+  function initSearch() {
+    const input = $("#q");
+    const hitBadge = $("#hitCount");
+    if (!input) return;
+
+    const searchable = $$(".searchable");
+    const originalHTML = new Map(searchable.map(el => [el, el.innerHTML]));
+
+    function setHitCount(n){
+      if (hitBadge) hitBadge.textContent = `命中：${n}`;
     }
-  </script>
-</head>
 
-<body class="grid-bg">
-  <!-- Top bar -->
-  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 supports-[backdrop-filter]:dark:bg-black/40 border-b"
-          style="border-color: rgb(var(--border));">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="h-16 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="h-9 w-9 rounded-xl flex items-center justify-center border"
-               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
-            <i class="fa-solid fa-layer-group" style="color: rgb(var(--accent));"></i>
-          </div>
-          <div class="min-w-0">
-            <div class="text-sm font-semibold tracking-tight truncate">史喜洋快速会议 · 可视化纪要</div>
-            <div class="text-xs" style="color: rgb(var(--muted));">企业融资 · 供应链金融 · 风控 · 获客</div>
-          </div>
-        </div>
+    function clearHighlights() {
+      searchable.forEach(el => {
+        const html = originalHTML.get(el);
+        if (html != null) el.innerHTML = html;
+        el.style.display = "";
+        el.style.opacity = "";
+      });
+      setHitCount(0);
+    }
 
-        <div class="flex items-center gap-2">
-          <div class="relative hidden sm:block">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
-            <input id="searchInput" class="focus-ring w-80 rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
-              style="border-color: rgb(var(--border));"
-              placeholder="搜索：应收账款 / 保理 / 商票 / 电商垫资 / 融资租赁 / 征信…" />
-          </div>
+    function highlight(el, re) {
+      // Only highlight text nodes by rebuilding innerHTML from saved snapshot
+      const html = originalHTML.get(el);
+      if (html == null) return;
+      // naive highlight: works well for our structured list cards
+      const safe = html.replace(re, (m) => `<mark style="background: rgba(var(--accent),.18); color: rgb(var(--text)); padding: 0 2px; border-radius: 6px;">${m}</mark>`);
+      el.innerHTML = safe;
+    }
 
-          <button id="themeBtn" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
-                  style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .10);">
-            <i id="themeIcon" class="fa-solid fa-moon" style="color: rgb(var(--accent2));"></i>
-            <span class="hidden sm:inline">深浅色</span>
-          </button>
+    function run(q) {
+      q = (q || "").trim();
+      if (!q) { clearHighlights(); return; }
 
-          <a href="#author" class="btn no-print rounded-xl border px-3 py-2 text-sm font-medium flex items-center gap-2"
-             style="border-color: rgb(var(--border));">
-            <i class="fa-solid fa-circle-info text-xs" style="color: rgb(var(--muted));"></i>
-            <span class="hidden sm:inline">作者</span>
-          </a>
-        </div>
+      const tokens = q.split(/\s+/).filter(Boolean).slice(0, 6); // avoid huge regex
+      const re = new RegExp(tokens.map(t => escapeReg(t)).join("|"), "ig");
+
+      let hits = 0;
+      searchable.forEach(el => {
+        const text = el.textContent || "";
+        if (re.test(text)) {
+          hits++;
+          el.style.display = "";
+          el.style.opacity = "1";
+          highlight(el, re);
+        } else {
+          // Hide only leaf items; keep page structure intact
+          el.style.display = "none";
+        }
+        re.lastIndex = 0;
+      });
+
+      setHitCount(hits);
+    }
+
+    input.addEventListener("input", (e) => run(e.target.value));
+
+    // Keyboard shortcut: ⌘K / Ctrl+K focus search
+    window.addEventListener("keydown", (e) => {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        input.focus();
+        input.select();
+      }
+      if (e.key === "Escape") {
+        if (document.activeElement === input) input.blur();
+      }
+    });
+  }
+
+  /* -----------------------------
+     5) Author button
+  ----------------------------- */
+  function initAuthorBtn(){
+    $("#authorBtn")?.addEventListener("click", () => {
+      document.getElementById("author")?.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  }
+
+  /* -----------------------------
+     6) Visuals
+  ----------------------------- */
+
+  // 6.1 SVG Flow
+  function drawFlow() {
+    const svg = $("#flowSvg");
+    if (!svg) return;
+
+    const W = 900, H = 260;
+
+    function node(x,y,w,h,title,sub,colorVar){
+      const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+      const r = document.createElementNS("http://www.w3.org/2000/svg","rect");
+      r.setAttribute("x", x); r.setAttribute("y", y);
+      r.setAttribute("width", w); r.setAttribute("height", h);
+      r.setAttribute("rx", 16);
+      r.setAttribute("fill", `rgba(${colorVar}, .10)`);
+      r.setAttribute("stroke", `rgba(${colorVar}, .28)`);
+      r.setAttribute("stroke-width", "2");
+      g.appendChild(r);
+
+      const t1 = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t1.setAttribute("x", x+16); t1.setAttribute("y", y+30);
+      t1.setAttribute("fill", "currentColor");
+      t1.setAttribute("font-size", "16");
+      t1.setAttribute("font-weight", "800");
+      t1.textContent = title;
+      g.appendChild(t1);
+
+      const t2 = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t2.setAttribute("x", x+16); t2.setAttribute("y", y+54);
+      t2.setAttribute("fill", "rgba(var(--muted),1)");
+      t2.setAttribute("font-size", "12");
+      t2.textContent = sub;
+      g.appendChild(t2);
+
+      return g;
+    }
+
+    function arrow(x1,y1,x2,y2){
+      const p = document.createElementNS("http://www.w3.org/2000/svg","path");
+      p.setAttribute("d", `M${x1},${y1} C${x1+40},${y1} ${x2-40},${y2} ${x2},${y2}`);
+      p.setAttribute("fill","none");
+      p.setAttribute("stroke","rgba(var(--muted),.65)");
+      p.setAttribute("stroke-width","2");
+      p.setAttribute("stroke-linecap","round");
+      svg.appendChild(p);
+
+      const head = document.createElementNS("http://www.w3.org/2000/svg","path");
+      head.setAttribute("d", `M${x2-10},${y2-6} L${x2},${y2} L${x2-10},${y2+6}`);
+      head.setAttribute("fill","none");
+      head.setAttribute("stroke","rgba(var(--muted),.65)");
+      head.setAttribute("stroke-width","2");
+      head.setAttribute("stroke-linecap","round");
+      head.setAttribute("stroke-linejoin","round");
+      svg.appendChild(head);
+    }
+
+    // Clear
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    // Background dots
+    const bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    bg.setAttribute("x","0"); bg.setAttribute("y","0");
+    bg.setAttribute("width", W); bg.setAttribute("height", H);
+    bg.setAttribute("fill","transparent");
+    svg.appendChild(bg);
+
+    const n1 = node(24, 38, 210, 84, "资产抓手", "应收/存货/设备", "var(--accent)");
+    const n2 = node(260, 38, 210, 84, "场景嵌入", "采购/生产/销售", "var(--accent2)");
+    const n3 = node(496, 38, 210, 84, "工具选择", "票据/租赁/保理", "var(--success)");
+    const n4 = node(732, 38, 144, 84, "风控动作", "可控性三问", "var(--warn)");
+
+    const n5 = node(130, 150, 280, 84, "历史对标", "融资记录 → 新资方", "var(--accent2)");
+    const n6 = node(440, 150, 330, 84, "闭环验证", "真实性 × 可控性 × 还款源", "var(--accent)");
+
+    svg.appendChild(n1); svg.appendChild(n2); svg.appendChild(n3); svg.appendChild(n4);
+    svg.appendChild(n5); svg.appendChild(n6);
+
+    arrow(234, 80, 260, 80);
+    arrow(470, 80, 496, 80);
+    arrow(706, 80, 732, 80);
+
+    arrow(270, 192, 440, 192);
+    arrow(410, 192, 496, 108);
+
+    // caption
+    const cap = document.createElementNS("http://www.w3.org/2000/svg","text");
+    cap.setAttribute("x","24"); cap.setAttribute("y","24");
+    cap.setAttribute("fill","rgba(var(--muted),.9)");
+    cap.setAttribute("font-size","12");
+    cap.textContent = "读法：先把资产翻译成授信语言 → 再把场景变成闭环 → 最后用风控动作锁定可做性";
+    svg.appendChild(cap);
+  }
+
+  // 6.2 Canvas Radar/Bar hybrid
+  function drawRadar() {
+    const c = $("#radar");
+    if (!c) return;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+
+    // HiDPI
+    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+    const cssW = c.clientWidth || 860;
+    const cssH = 300;
+    c.width = Math.floor(cssW * dpr);
+    c.height = Math.floor(cssH * dpr);
+    c.style.height = cssH + "px";
+    ctx.scale(dpr, dpr);
+
+    const styles = getComputedStyle(document.documentElement);
+    const muted = styles.getPropertyValue("--muted").trim() || "107 114 128";
+    const text = styles.getPropertyValue("--text").trim() || "17 24 39";
+    const accent = styles.getPropertyValue("--accent").trim() || "59 130 246";
+    const border = styles.getPropertyValue("--border").trim() || "229 231 235";
+
+    function rgb(str, a=1){ return `rgba(${str},${a})`; }
+
+    ctx.clearRect(0,0,cssW,cssH);
+
+    // Data (示意值：越大越优先关注)
+    const labels = ["应收", "存货", "设备", "利润质量", "开票一致性"];
+    const values = [9, 8, 7, 6, 8]; // 1-10
+    const center = {x: 180, y: 160};
+    const R = 105;
+
+    // Grid
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = rgb(border, 1);
+    for (let k=1; k<=4; k++){
+      const r = (R/4)*k;
+      ctx.beginPath();
+      for (let i=0; i<labels.length; i++){
+        const ang = -Math.PI/2 + i*(2*Math.PI/labels.length);
+        const x = center.x + Math.cos(ang)*r;
+        const y = center.y + Math.sin(ang)*r;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.closePath(); ctx.stroke();
+    }
+    // Axes + labels
+    ctx.fillStyle = rgb(muted, 1);
+    ctx.font = "12px " + styles.getPropertyValue("--sans");
+    for (let i=0; i<labels.length; i++){
+      const ang = -Math.PI/2 + i*(2*Math.PI/labels.length);
+      const x = center.x + Math.cos(ang)*R;
+      const y = center.y + Math.sin(ang)*R;
+      ctx.strokeStyle = rgb(border, 1);
+      ctx.beginPath(); ctx.moveTo(center.x, center.y); ctx.lineTo(x,y); ctx.stroke();
+
+      const lx = center.x + Math.cos(ang)*(R+18);
+      const ly = center.y + Math.sin(ang)*(R+18);
+      ctx.fillText(labels[i], lx-14, ly+4);
+    }
+
+    // Polygon
+    ctx.strokeStyle = rgb(accent, .9);
+    ctx.fillStyle = rgb(accent, .12);
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i=0; i<labels.length; i++){
+      const ang = -Math.PI/2 + i*(2*Math.PI/labels.length);
+      const r = (values[i]/10)*R;
+      const x = center.x + Math.cos(ang)*r;
+      const y = center.y + Math.sin(ang)*r;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // Right side bar list
+    const bx = 380, by = 58;
+    const bw = cssW - bx - 18;
+    const rowH = 34;
+
+    ctx.fillStyle = rgb(text, 1);
+    ctx.font = "800 13px " + styles.getPropertyValue("--sans");
+    ctx.fillText("融资机构视角：优先级示意", bx, by-18);
+
+    for (let i=0; i<labels.length; i++){
+      const y = by + i*rowH;
+      // track
+      ctx.fillStyle = rgb(border, 1);
+      roundRect(ctx, bx, y, bw, 12, 8);
+      ctx.fill();
+
+      // bar
+      ctx.fillStyle = rgb(accent, .20);
+      roundRect(ctx, bx, y, (bw)*(values[i]/10), 12, 8);
+      ctx.fill();
+
+      // text
+      ctx.fillStyle = rgb(text, 1);
+      ctx.font = "12px " + styles.getPropertyValue("--sans");
+      ctx.fillText(labels[i], bx+10, y+9);
+      ctx.fillStyle = rgb(muted, 1);
+      ctx.fillText(String(values[i]) + "/10", bx+bw-44, y+9);
+    }
+
+    function roundRect(ctx, x, y, w, h, r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr, y);
+      ctx.lineTo(x+w-rr, y);
+      ctx.quadraticCurveTo(x+w, y, x+w, y+rr);
+      ctx.lineTo(x+w, y+h-rr);
+      ctx.quadraticCurveTo(x+w, y+h, x+w-rr, y+h);
+      ctx.lineTo(x+rr, y+h);
+      ctx.quadraticCurveTo(x, y+h, x, y+h-rr);
+      ctx.lineTo(x, y+rr);
+      ctx.quadraticCurveTo(x, y, x+rr, y);
+      ctx.closePath();
+    }
+  }
+
+  // 6.3 Matrix
+  function drawMatrix(){
+    const wrap = $("#matrix");
+    if(!wrap) return;
+
+    const rows = [
+      {name:"采购预付/先款后货", tools:["保理","贸易托盘","供应链票据","电子凭证"]},
+      {name:"库存/库压/货押", tools:["货押","动态库压","贸易托盘","仓储监管"]},
+      {name:"下游账期/应收", tools:["暗保理","确权保理","反向保理","供应链票据"]},
+      {name:"设备/产线更新", tools:["融资租赁","设备贷","收费权质押","担保增信"]},
+      {name:"电商平台账期", tools:["订单垫资","冻结资金放款","达人垫资","仓储监管"]},
+      {name:"酒店/学校装修", tools:["装修贷/代建","收费权质押","设备租赁","信用增信"]}
+    ];
+    const cols = ["供应链票据","电子凭证","融资租赁","暗保理","确权保理","反向保理","贸易托盘","货押","动态库压","订单垫资","收费权质押","仓储监管","信用增信","设备贷","达人垫资","冻结资金放款","装修贷/代建"];
+
+    // Build heat map values
+    const map = new Map();
+    rows.forEach((r,ri)=>{
+      cols.forEach((c,ci)=>{
+        let v = 0;
+        // simple scoring
+        if (r.tools.includes(c)) v = 3;
+        if ((r.name.includes("应收") || r.name.includes("账期")) && ["暗保理","确权保理","反向保理","供应链票据"].includes(c)) v = Math.max(v, 3);
+        if (r.name.includes("库存") && ["货押","动态库压","仓储监管","贸易托盘"].includes(c)) v = Math.max(v, 3);
+        if (r.name.includes("设备") && ["融资租赁","设备贷"].includes(c)) v = Math.max(v, 3);
+        if (r.name.includes("电商") && ["订单垫资","冻结资金放款","达人垫资"].includes(c)) v = Math.max(v, 3);
+        if (r.name.includes("装修") && ["装修贷/代建","收费权质押"].includes(c)) v = Math.max(v, 3);
+
+        // secondary relevance
+        if (v===0) {
+          if (r.name.includes("采购") && ["供应链票据","电子凭证"].includes(c)) v = 2;
+          if (r.name.includes("应收") && ["贸易托盘"].includes(c)) v = 2;
+        }
+        map.set(`${ri}-${ci}`, v);
+      });
+    });
+
+    const styles = getComputedStyle(document.documentElement);
+    const border = styles.getPropertyValue("--border").trim() || "229 231 235";
+    const text = styles.getPropertyValue("--text").trim() || "17 24 39";
+    const muted = styles.getPropertyValue("--muted").trim() || "107 114 128";
+    const accent = styles.getPropertyValue("--accent").trim() || "59 130 246";
+    const accent2 = styles.getPropertyValue("--accent2").trim() || "99 102 241";
+
+    const legend = `
+      <div class="row wrap" style="gap:10px; margin-bottom: 10px;">
+        <span class="pill">矩阵读法：场景行 × 工具列（颜色越深越推荐）</span>
+        <span class="pill"><span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:rgba(${accent},.18);margin-right:6px;"></span>弱相关</span>
+        <span class="pill"><span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:rgba(${accent2},.22);margin-right:6px;"></span>强相关</span>
       </div>
+    `;
 
-      <div class="pb-3 sm:hidden">
-        <div class="relative">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: rgb(var(--muted));"></i>
-          <input id="searchInputMobile" class="focus-ring w-full rounded-xl border pl-9 pr-3 py-2 text-sm bg-transparent"
-            style="border-color: rgb(var(--border));"
-            placeholder="搜索关键点…" />
-        </div>
-      </div>
-    </div>
-  </header>
+    const table = document.createElement("div");
+    table.style.display = "grid";
+    table.style.gridTemplateColumns = `240px repeat(${cols.length}, minmax(90px,1fr))`;
+    table.style.gap = "8px";
 
-  <!-- Hero -->
-  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-8">
-    <div class="reveal">
-      <div class="flex flex-col lg:flex-row lg:items-end gap-6">
-        <div class="flex-1 min-w-0">
-          <div class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
-               style="border-color: rgb(var(--border)); background: rgba(var(--accent), .08);">
-            <span class="h-1.5 w-1.5 rounded-full" style="background: rgb(var(--accent2));"></span>
-            <span style="color: rgb(var(--muted));">从“会议纪要”到“可执行融资地图”</span>
-          </div>
+    const corner = cell("场景 \\ 工具", true);
+    table.appendChild(corner);
+    cols.forEach(c => table.appendChild(cell(c, true, true)));
 
-          <h1 class="serif mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-            企业融资与供应链金融：<span style="color: rgb(var(--accent));">一张可复用的实战框架</span>
-          </h1>
+    rows.forEach((r,ri)=>{
+      table.appendChild(cell(r.name, true, false, true));
+      cols.forEach((c,ci)=>{
+        const v = map.get(`${ri}-${ci}`) || 0;
+        const d = document.createElement("div");
+        d.style.border = `1px solid rgba(${border},.95)`;
+        d.style.borderRadius = "12px";
+        d.style.padding = "10px 10px";
+        d.style.fontSize = "12px";
+        d.style.lineHeight = "1.3";
+        d.style.color = `rgba(${text},1)`;
+        d.style.background = v===3
+          ? `rgba(${accent2},.22)`
+          : v===2
+            ? `rgba(${accent},.16)`
+            : `rgba(${border},.18)`;
+        d.style.transition = "transform .16s ease, box-shadow .16s ease, border-color .16s ease";
+        d.title = v===3 ? "强相关：优先考虑" : v===2 ? "弱相关：可作为备选" : "不推荐/需重新论证";
 
-          <p class="mt-4 text-base sm:text-lg prose-like" style="color: rgb(var(--muted));">
-            这套纪要的价值不在“知识点多”，而在于它把融资拆成一条<strong>可落地的因果链</strong>：
-            <span class="font-semibold">财务报表 → 上下游场景 → 资金用途 → 工具选择 → 风控动作 → 交付与分润</span>。
-            当你能沿着这条链定位问题，融资就从“撞大运”变成“工程化匹配”。
-          </p>
+        d.addEventListener("mouseenter", () => {
+          d.style.transform = "translateY(-1px)";
+          d.style.boxShadow = "0 14px 34px rgba(0,0,0,.10)";
+          d.style.borderColor = `rgba(${accent},.35)`;
+        });
+        d.addEventListener("mouseleave", () => {
+          d.style.transform = "";
+          d.style.boxShadow = "";
+          d.style.borderColor = `1px solid rgba(${border},.95)`;
+        });
 
-          <div class="mt-6 flex flex-wrap gap-2">
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-sitemap" style="color: rgb(var(--accent));"></i> 方法论
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-file-invoice" style="color: rgb(var(--accent));"></i> 报表与征信
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-arrows-spin" style="color: rgb(var(--accent));"></i> 供应链工具
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent));"></i> 风控要点
-            </span>
-            <span class="pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-              <i class="fa-solid fa-bullhorn" style="color: rgb(var(--accent));"></i> 新媒体获客
-            </span>
-          </div>
-        </div>
+        d.innerHTML = v===0
+          ? `<span style="color:rgba(${muted},1)">—</span>`
+          : (v===3 ? `<b>推荐</b><div style="color:rgba(${muted},1);margin-top:4px;">匹配度高</div>` : `<b>可选</b><div style="color:rgba(${muted},1);margin-top:4px;">需补闭环</div>`);
+        table.appendChild(d);
+      });
+    });
 
-        <!-- Quick facts -->
-        <div class="card rounded-2xl p-5 w-full lg:w-[420px]">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速概览</div>
-              <div class="mt-1 text-lg font-semibold">这份纪要覆盖了什么？</div>
-            </div>
-            <div class="h-10 w-10 rounded-xl flex items-center justify-center border"
-                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
-              <i class="fa-solid fa-gauge-high" style="color: rgb(var(--accent2));"></i>
-            </div>
-          </div>
+    wrap.innerHTML = legend;
+    wrap.appendChild(table);
 
-          <div class="mt-4 grid grid-cols-2 gap-3">
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">会议场次</div>
-              <div class="mt-1 text-2xl font-bold">5+</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">1/17–1/18 多场</div>
-            </div>
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">核心主轴</div>
-              <div class="mt-1 text-2xl font-bold">6</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">报表/场景/工具/风控/沟通/获客</div>
-            </div>
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">高频工具</div>
-              <div class="mt-1 text-2xl font-bold">保理</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">暗保理 / 反向保理 / 供应链票据</div>
-            </div>
-            <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-              <div class="text-xs" style="color: rgb(var(--muted));">适用行业</div>
-              <div class="mt-1 text-2xl font-bold">电商</div>
-              <div class="text-xs mt-1" style="color: rgb(var(--muted));">酒店/学校/制造/快消等</div>
-            </div>
-          </div>
+    function cell(textContent, head=false, colHead=false, rowHead=false){
+      const d = document.createElement("div");
+      d.style.border = `1px solid rgba(${border},.95)`;
+      d.style.borderRadius = "12px";
+      d.style.padding = "10px 12px";
+      d.style.background = head ? `rgba(${border},.18)` : `rgba(${border},.10)`;
+      d.style.color = head ? `rgba(${text},1)` : `rgba(${muted},1)`;
+      d.style.fontWeight = head ? "800" : "600";
+      d.style.fontSize = colHead ? "12px" : "13px";
+      d.style.lineHeight = "1.35";
+      if (rowHead) d.style.display = "flex", d.style.alignItems="center";
+      d.textContent = textContent;
+      return d;
+    }
+  }
 
-          <div class="mt-4 text-xs" style="color: rgb(var(--muted));">
-            <span class="mono">Aha</span>：融资不是“找产品”，而是“找<strong>资金嵌入点</strong> + <strong>可控风险</strong>”。
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  /* -----------------------------
+     7) Year
+  ----------------------------- */
+  function setYear(){
+    const y = $("#year");
+    if (y) y.textContent = String(new Date().getFullYear());
+  }
 
-  <!-- Main -->
-  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- Left / TOC -->
-      <aside class="lg:col-span-3">
-        <div class="card rounded-2xl p-4 sticky top-24 no-print">
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-semibold">目录</div>
-            <button id="scrollTopBtn" class="btn text-xs px-2 py-1 rounded-lg border"
-              style="border-color: rgb(var(--border)); color: rgb(var(--muted));">
-              <i class="fa-solid fa-arrow-up"></i>
-            </button>
-          </div>
-          <nav class="mt-3 space-y-1 text-sm" id="toc"></nav>
+  /* -----------------------------
+     8) Boot
+  ----------------------------- */
+  function boot() {
+    initTheme();
+    initFadeIn();
+    initTOC();
+    initSearch();
+    initAuthorBtn();
+    setYear();
 
-          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
-            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">快速过滤</div>
-            <div class="mt-2 flex flex-wrap gap-2" id="quickFilters"></div>
-          </div>
+    // draw visuals after first paint
+    requestAnimationFrame(() => {
+      drawFlow();
+      drawRadar();
+      drawMatrix();
+    });
 
-          <div class="mt-4 pt-4 border-t" style="border-color: rgb(var(--border));">
-            <div class="text-xs font-semibold tracking-wide uppercase" style="color: rgb(var(--muted));">提示</div>
-            <p class="mt-2 text-xs leading-relaxed" style="color: rgb(var(--muted));">
-              你可以用右上角搜索：比如输入“暗保理”“商票保贴”“电商垫资”“融资租赁”“征信”，页面会高亮并折叠无关模块。
-            </p>
-          </div>
-        </div>
-      </aside>
+    // redraw radar on resize (debounced)
+    let t = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(t);
+      t = setTimeout(() => drawRadar(), 150);
+    });
+  }
 
-      <!-- Content -->
-      <section class="lg:col-span-9 space-y-6" id="contentRoot">
+  // Defensive: ensure DOM ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
 
-        <!-- Aha moment -->
-        <section id="aha" class="reveal card rounded-2xl p-6 searchable">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h2 class="serif text-2xl font-bold tracking-tight">Aha Moment</h2>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                这份纪要真正教会你的，是一套<strong>“从信息到方案”的流水线</strong>。
-              </p>
-            </div>
-            <div class="h-11 w-11 rounded-2xl flex items-center justify-center border"
-              style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
-              <i class="fa-solid fa-bolt" style="color: rgb(var(--accent2));"></i>
-            </div>
-          </div>
-
-          <blockquote class="mt-4 rounded-2xl border p-4 text-base sm:text-lg leading-relaxed"
-            style="border-color: rgb(var(--border)); background: rgba(var(--accent), .06);">
-            <span class="font-semibold">一句话洞察：</span>
-            <span>
-              企业融资不是“去问客户要负债”，而是先<strong>定位资金卡点</strong>（采购/库存/账期/工资/研发/囤货）
-              → 再用<strong>报表与票据</strong>证明真实性 → 最后选一个<strong>可控风控动作</strong>把风险关进笼子里。
-            </span>
-          </blockquote>
-
-          <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent));"></span>
-                <div class="text-sm font-semibold">输入</div>
-              </div>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                三张表（资产负债表/利润表/增值税） + 上下游合同/票据/回款路径
-              </p>
-            </div>
-            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--accent2));"></span>
-                <div class="text-sm font-semibold">处理</div>
-              </div>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                还原“采购→生产→销售”的资金流，找出账期与付款方式的融资属性
-              </p>
-            </div>
-            <div class="rounded-2xl border p-4" style="border-color: rgb(var(--border));">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full" style="background: rgb(var(--good));"></span>
-                <div class="text-sm font-semibold">输出</div>
-              </div>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                匹配：保理/租赁/供应链票据/电商垫资/货押托盘，并附风控动作清单
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Visual: Framework Map -->
-        <section id="framework" class="reveal card rounded-2xl p-6 searchable">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="serif text-2xl font-bold tracking-tight">融资“工程化”框架图</h2>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                用一张图把会议里分散的内容，压缩成可复用的工作流。
-              </p>
-            </div>
-            <i class="fa-solid fa-diagram-project text-lg" style="color: rgb(var(--muted));"></i>
-          </div>
-
-          <!-- Inline SVG (fast, no external images; effectively "webp-free") -->
-          <div class="mt-5 overflow-x-auto">
-            <div class="min-w-[860px] rounded-2xl border p-5"
-                 style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .04);">
-              <svg viewBox="0 0 980 260" width="100%" height="260" role="img" aria-label="融资工程化框架图">
-                <defs>
-                  <linearGradient id="g1" x1="0" x2="1">
-                    <stop offset="0" stop-color="rgba(79,70,229,.25)"></stop>
-                    <stop offset="1" stop-color="rgba(6,182,212,.20)"></stop>
-                  </linearGradient>
-                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(0,0,0,.18)"/>
-                  </filter>
-                </defs>
-
-                <!-- lanes -->
-                <rect x="18" y="18" rx="18" ry="18" width="944" height="224" fill="url(#g1)" stroke="rgba(120,120,130,.35)"></rect>
-
-                <!-- nodes -->
-                <g filter="url(#shadow)">
-                  <rect x="42" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="240" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="438" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="636" y="62" rx="14" ry="14" width="170" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                  <rect x="834" y="62" rx="14" ry="14" width="120" height="136" fill="rgba(255,255,255,.80)" stroke="rgba(120,120,130,.35)"></rect>
-                </g>
-
-                <!-- arrows -->
-                <g stroke="rgba(79,70,229,.75)" stroke-width="3" fill="none">
-                  <path d="M212 130 L232 130"></path>
-                  <path d="M410 130 L432 130"></path>
-                  <path d="M608 130 L630 130"></path>
-                  <path d="M806 130 L828 130"></path>
-                  <polygon points="232,130 224,124 224,136" fill="rgba(79,70,229,.75)"></polygon>
-                  <polygon points="432,130 424,124 424,136" fill="rgba(79,70,229,.75)"></polygon>
-                  <polygon points="630,130 622,124 622,136" fill="rgba(79,70,229,.75)"></polygon>
-                  <polygon points="828,130 820,124 820,136" fill="rgba(79,70,229,.75)"></polygon>
-                </g>
-
-                <!-- labels -->
-                <g font-family="Noto Sans SC, sans-serif" fill="rgba(17,24,39,.92)">
-                  <text x="62" y="92" font-size="14" font-weight="700">1) 信息采集</text>
-                  <text x="62" y="116" font-size="12">· 三大报表</text>
-                  <text x="62" y="136" font-size="12">· 征信/负债结构</text>
-                  <text x="62" y="156" font-size="12">· 合同/票据/回款</text>
-
-                  <text x="260" y="92" font-size="14" font-weight="700">2) 还原场景</text>
-                  <text x="260" y="116" font-size="12">· 采购/生产/销售</text>
-                  <text x="260" y="136" font-size="12">· 账期/付款方式</text>
-                  <text x="260" y="156" font-size="12">· 资金用途拆解</text>
-
-                  <text x="458" y="92" font-size="14" font-weight="700">3) 工具匹配</text>
-                  <text x="458" y="116" font-size="12">· 保理（明/暗/反向）</text>
-                  <text x="458" y="136" font-size="12">· 租赁 / 票据 / 电商垫资</text>
-                  <text x="458" y="156" font-size="12">· 货押 / 托盘 / 代采</text>
-
-                  <text x="656" y="92" font-size="14" font-weight="700">4) 风控动作</text>
-                  <text x="656" y="116" font-size="12">· 确权/签收/通知函</text>
-                  <text x="656" y="136" font-size="12">· 控回款账户/控U盾</text>
-                  <text x="656" y="156" font-size="12">· 仓储监管/物权控制</text>
-
-                  <text x="854" y="92" font-size="14" font-weight="700">5) 交付</text>
-                  <text x="854" y="116" font-size="12">· 材料清单</text>
-                  <text x="854" y="136" font-size="12">· 报价分润</text>
-                  <text x="854" y="156" font-size="12">· 复盘迭代</text>
-                </g>
-              </svg>
-
-              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">关键提醒</div>
-                  <div class="mt-1 text-sm font-semibold">先做“场景”，再谈“产品”</div>
-                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
-                    会议反复强调：别上来问负债，先把产业链讲清楚，信任自然建立。
-                  </p>
-                </div>
-                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">高频坑位</div>
-                  <div class="mt-1 text-sm font-semibold">“补流”是模糊表述</div>
-                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
-                    要把资金用途拆到“采购/库存/账期/工资/研发/囤货”等可验证节点。
-                  </p>
-                </div>
-                <div class="rounded-xl border p-3" style="border-color: rgb(var(--border));">
-                  <div class="text-xs font-semibold" style="color: rgb(var(--muted));">可复制优势</div>
-                  <div class="mt-1 text-sm font-semibold">风控动作清单化</div>
-                  <p class="mt-1 text-xs" style="color: rgb(var(--muted));">
-                    暗保理为何更“受欢迎”？因为它把风险压在“控回款/控单据/控物权”的动作上。
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Timeline -->
-        <section id="timeline" class="reveal card rounded-2xl p-6 searchable">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="serif text-2xl font-bold tracking-tight">会议时间线</h2>
-              <p class="mt-2 text-sm" style="color: rgb(var(--muted));">把多场内容合并成“一个连续课程”。</p>
-            </div>
-            <i class="fa-solid fa-clock text-lg" style="color: rgb(var(--muted));"></i>
-          </div>
-
-          <div class="mt-5 grid grid-cols-1 gap-4">
-            <!-- item -->
-            <div class="flex gap-4">
-              <div class="flex flex-col items-center">
-                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
-                     style="border-color: rgb(var(--border)); background: rgba(var(--accent), .10);">
-                  <i class="fa-solid fa-chart-pie" style="color: rgb(var(--accent));"></i>
-                </div>
-                <div class="dash w-[2px] flex-1 mt-2"></div>
-              </div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-sm font-semibold">2026-01-17 09:30–10:30</span>
-                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                        style="background: rgba(var(--accent2), .10); border: 1px solid rgb(var(--border));">
-                    报表 + 场景 + 融资属性
-                  </span>
-                </div>
-                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                  三大抓手：财务报表（应收/存货/设备）、上下游资金嵌入、对标历史融资机构找新机构。
-                  重点：利润来源是否过度依赖政府补贴；增值税开票与营收差距的风险信号。
-                </p>
-              </div>
-            </div>
-
-            <div class="flex gap-4">
-              <div class="flex flex-col items-center">
-                <div class="h-10 w-10 rounded-2xl border flex items-center justify-center"
-                     style="border-color: rgb(var(--border)); background: rgba(var(--accent2), .12);">
-                  <i class="fa-solid fa-shield-halved" style="color: rgb(var(--accent2));"></i>
-                </div>
-                <div class="dash w-[2px] flex-1 mt-2"></div>
-              </div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-sm font-semibold">2026-01-17 11:08–12:08</span>
-                  <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                        style="background: rgba(var(--accent), .08); border: 1px solid rgb(var(--border));">
-                    负债/征信/供应链票据
-                  </span>
-                </div>
-                <p class="mt-2 text-sm" style="color: rgb(var(--muted));">
-                  初次接触企业：避免直问负债，先聊产业链并“赞美建立信任”。
-                  负债区分有息/无息；征信区分历史/当前原因。
-                  核心企业赋能上下游金融（授信/低息）是关键。
-                  区分供应链票据（最长6个月、可拆分流转）与电子债权凭证（期限更长但系统内流通、成本高）。
-                </p>
-              </div>
-            </div>
-
-            <div class
+</html>
